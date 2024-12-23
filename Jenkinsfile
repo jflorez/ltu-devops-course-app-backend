@@ -133,7 +133,7 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh 'docker --version && docker compose --help'
+                sh 'docker --version && docker compose --help && docker run hello-world'
                 sh 'yarn test -t "@api|@db"'
             }
             post {
