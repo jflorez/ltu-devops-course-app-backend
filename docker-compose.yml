@@ -13,7 +13,6 @@ services:
       - MARIADB_HOST=speedrun-db
       - APP_API_TOKEN=${APP_API_TOKEN}
       - APP_API_PORT=${APP_API_PORT}
-      - TESTCONTAINERS_RYUK_DISABLED=true
     ports:
       - ${APP_API_PORT}:${APP_API_PORT}
     healthcheck:
