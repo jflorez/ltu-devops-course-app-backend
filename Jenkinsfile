@@ -211,8 +211,10 @@ pipeline {
         }
         // Always perform these actions
         always {
-            // Clean up test artifacts to save disk space
-            cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
+            node {
+                // Clean up test artifacts to save disk space
+                cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
+            }
         }
     }
 }
