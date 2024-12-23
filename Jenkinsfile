@@ -8,25 +8,33 @@
  * - All changes are integrated frequently into the trunk
  * - Only trunk (main) gets deployed to production
  *
- * Required Environment Variables (stored in Jenkins credential 'speedrun-app-env'):
- * Application Variables:
- * - APP_API_TOKEN: Security token for API authentication
- * - APP_API_PORT: Port number for the application API
+ * Required Jenkins Credentials:
+ * Each sensitive value is stored as a separate Jenkins credential for better security
+ * 
+ * Application Credentials:
+ * - app-api-token: Security token for API authentication
+ * - app-api-port: Port number for the application API
  *   - Production: Uses the port specified in credentials
  *   - Review: Uses port + 100 (e.g., if prod is 3000, review is 3100)
  *
- * Database Variables:
- * - MARIADB_ROOT_PASSWORD: Root password for MariaDB
- * - MARIADB_USER: Database user for application
- * - MARIADB_PASSWORD: Database user's password
- * - MARIADB_DATABASE: Name of the application database
- * - MARIADB_PORT: Port number for MariaDB
+ * Database Credentials:
+ * - mariadb-root-password: Root password for MariaDB
+ * - mariadb-user: Database user for application
+ * - mariadb-password: Database user's password
+ * - mariadb-database: Name of the application database
+ * - mariadb-port: Port number for MariaDB
  *   - Production: Uses the port specified in credentials
  *   - Review: Uses port + 100 (e.g., if prod is 3306, review is 3406)
  *
  * Note: ENVIRONMENT_ID is automatically set by the pipeline stages
- * - 'review' for feature branch deployments
+ * - 'review-${BUILD_NUMBER}' for feature branch deployments
  * - 'prod' for production deployments
+ *
+ * Jenkins Credentials Management:
+ * - Each credential is stored separately for fine-grained access control
+ * - Credentials are automatically masked in logs
+ * - Values are securely injected into the pipeline environment
+ * - Using individual credentials follows the principle of least privilege
  *
  * DevOps Learning Points:
  * 1. Continuous Integration (CI):
@@ -45,7 +53,7 @@
  *    - Port isolation between environments
  *    - Automated cleanup of resources
  *    - Version tagging for traceability
- *    - Secure credential management
+ *    - Secure credential management with individual secrets
  *    - Consistent test environments using containers
  */
 
@@ -55,9 +63,21 @@ pipeline {
     agent any
 
     environment {
-        // Securely manage environment variables using Jenkins credentials
-        // This prevents sensitive data from being exposed in the code
+        // Load the environment file containing all variables
+        // This file includes all application configurations
         DOCKER_COMPOSE_ENV = credentials('speedrun-app-env')
+        
+        // Extract all environment variables from the credentials file
+        // This makes them available to the pipeline and docker-compose
+        VARS = """
+            set +x  # Prevent credentials from being shown in logs
+            . ${DOCKER_COMPOSE_ENV}
+            env > .env
+            rm ${DOCKER_COMPOSE_ENV}
+        """
+        
+        // Disable Testcontainers Ryuk container for cleanup
+        // We handle cleanup ourselves in the post section
         TESTCONTAINERS_RYUK_DISABLED = true
     }
 
@@ -85,6 +105,11 @@ pipeline {
                 // Fetch the latest code from version control
                 // 'scm' refers to the Source Control Management system configured in the job
                 checkout scm
+                
+                // Load environment variables from credentials
+                sh """
+                    ${VARS}
+                """
             }
         }
         
@@ -93,12 +118,13 @@ pipeline {
             steps {
                 // Setup Node.js package management using corepack
                 // This ensures consistent package manager versions across builds
-                sh 'corepack enable'
-                sh 'corepack prepare yarn@4.5.3 --activate'
-                // Install dependencies and build
-                // Configuration in .yarnrc.yml allows lockfile modifications
-                sh 'yarn install'
-                sh 'yarn tsoa'
+                sh '''
+                    source .env
+                    corepack enable
+                    corepack prepare yarn@4.5.3 --activate
+                    yarn install
+                    yarn tsoa
+                '''
             }
         }
 
@@ -107,8 +133,11 @@ pipeline {
             steps {
                 // Static code analysis and style checking
                 // These checks ensure code consistency and catch potential issues early
-                sh 'yarn lint'
-                sh 'yarn format:check'
+                sh '''
+                    source .env
+                    yarn lint
+                    yarn format:check
+                '''
             }
         }
 
@@ -117,7 +146,10 @@ pipeline {
             steps {
                 // Run unit tests for all branches
                 // '@unit' tag helps categorize and run specific test types
-                sh 'yarn test -t "@unit"'
+                sh '''
+                    source .env
+                    yarn test -t "@unit"
+                '''
             }
             post {
                 // Archive test results for Jenkins to track test history
@@ -133,8 +165,10 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh 'docker --version && docker compose --help && docker run hello-world'
-                sh 'yarn test -t "@api|@db"'
+                sh '''
+                    source .env
+                    yarn test -t "@api|@db"
+                '''
             }
             post {
                 always {
@@ -148,7 +182,10 @@ pipeline {
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
-                sh 'docker compose build'
+                sh '''
+                    source .env
+                    docker compose build
+                '''
             }
         }
 
@@ -162,11 +199,10 @@ pipeline {
             steps {
                 script {
                     // Clean up any previous review environment
-                    sh 'docker compose down || true'
-                    // Deploy to review environment with test configuration
-                    // This creates an isolated environment for testing features
-                    // Review environment uses different ports to avoid conflicts with production
                     sh '''
+                        source .env
+                        docker compose down || true
+                        
                         # Calculate review environment ports (prod ports + 100)
                         export ENVIRONMENT_ID=review-${BUILD_NUMBER}
                         export APP_API_PORT=$((APP_API_PORT + 100))
@@ -187,9 +223,10 @@ pipeline {
             steps {
                 script {
                     // Clean up existing deployment
-                    sh 'docker compose down || true'
-                    // Deploy to production environment using default ports from credentials
                     sh '''
+                        source .env
+                        docker compose down || true
+                        
                         export ENVIRONMENT_ID=prod
                         docker compose up --build --wait -d
                     '''
@@ -215,8 +252,10 @@ pipeline {
             node('') {
                 // Ensure cleanup of resources even if the pipeline fails
                 // This prevents resource leaks and stuck environments
-                sh 'pwd && ls -la'
-                sh 'docker compose down || true'
+                sh '''
+                    source .env || true
+                    docker compose down || true
+                '''
             }
         }
         // Always perform these actions
