@@ -1,4 +1,5 @@
 !.gitignore
+.yarn/
 test-results/
 .vscode/
 # Node.js dependencies
