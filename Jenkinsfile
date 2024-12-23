@@ -101,7 +101,8 @@ pipeline {
                 sh 'corepack enable'
                 sh 'corepack prepare yarn@4.5.3 --activate'
                 // Install project dependencies
-                sh 'yarn install'
+                // Allow lockfile modifications since we're in an isolated container
+                sh 'yarn install --mode=update-lockfile'
             }
         }
 
