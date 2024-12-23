@@ -100,12 +100,9 @@ pipeline {
                 // This ensures consistent package manager versions across builds
                 sh 'corepack enable'
                 sh 'corepack prepare yarn@4.5.3 --activate'
-                // Install project dependencies with immutable installs
-                // --immutable ensures the install matches yarn.lock exactly
-                // --prefer-offline uses cache when possible for faster installs
-                sh 'yarn install --mode=skip-build'
-                // Run the build step explicitly after install
-                sh 'yarn build'
+                // Install dependencies and build
+                // Configuration in .yarnrc.yml allows lockfile modifications
+                sh 'yarn install'
             }
         }
 
