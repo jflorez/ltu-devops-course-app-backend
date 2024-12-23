@@ -57,7 +57,10 @@ describe('@api category', () => {
                 description: 'A unique test category',
             };
 
-            const createResponse = await request(app).post('/api/categories').send(newCategory).set('X-API-KEY', apiKey);
+            const createResponse = await request(app)
+                .post('/api/categories')
+                .send(newCategory)
+                .set('X-API-KEY', apiKey);
 
             updateCategoryId = createResponse.body.details as string;
 
@@ -79,7 +82,9 @@ describe('@api category', () => {
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('success');
 
-            const verifyResponse = await request(app).get(`/api/categories/${updateCategoryId}`).set('X-API-KEY', apiKey);
+            const verifyResponse = await request(app)
+                .get(`/api/categories/${updateCategoryId}`)
+                .set('X-API-KEY', apiKey);
             const verifiedCategory = verifyResponse.body.details as Category;
 
             expect(verifiedCategory.name).toBe('Updated Category');
@@ -97,7 +102,10 @@ describe('@api category', () => {
                 description: 'A unique test category for deletion',
             };
 
-            const createResponse = await request(app).post('/api/categories').send(newCategory).set('X-API-KEY', apiKey);
+            const createResponse = await request(app)
+                .post('/api/categories')
+                .send(newCategory)
+                .set('X-API-KEY', apiKey);
 
             updateCategoryId = createResponse.body.details as string;
         });

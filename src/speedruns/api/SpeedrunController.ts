@@ -127,10 +127,14 @@ export class SpeedrunController extends Controller {
         const runs = await this.speedrunDBService.getSpeedruns(speedrun.game.id);
         const [worldRecordCheck, personalProgressCheck] = [
             speedrunStats.isUnreasonableWorldRecord(runs, { ...speedrun, id: '' }),
-            speedrunStats.isUnreasonablePersonalBest(runs, { ...speedrun, id: '' })
+            speedrunStats.isUnreasonablePersonalBest(runs, { ...speedrun, id: '' }),
         ];
 
-        const unreasonableCheck = worldRecordCheck.isUnreasonable ? worldRecordCheck : personalProgressCheck.isUnreasonable ? personalProgressCheck : null;
+        const unreasonableCheck = worldRecordCheck.isUnreasonable
+            ? worldRecordCheck
+            : personalProgressCheck.isUnreasonable
+              ? personalProgressCheck
+              : null;
 
         if (!unreasonableCheck) {
             return undefined;

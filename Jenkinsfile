@@ -152,7 +152,7 @@ pipeline {
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
-                sh 'docker-compose build'
+                sh 'docker compose build'
             }
         }
 
@@ -193,7 +193,7 @@ pipeline {
             steps {
                 script {
                     // Clean up existing deployment
-                    sh 'docker-compose down || true'
+                    sh 'docker compose down || true'
                     // Deploy to production environment using default ports from credentials
                     sh '''
                         export ENVIRONMENT_ID=prod

@@ -37,15 +37,18 @@ const config: Config = {
 
     // A list of reporter names that Jest uses when writing coverage reports
     reporters: [
-        "default",
-        ["jest-junit", {
-            outputDirectory: 'test-results',
-            outputName: 'junit.xml',
-            classNameTemplate: "{classname}",
-            titleTemplate: "{title}",
-            ancestorSeparator: " › ",
-            usePathForSuiteName: true
-        }]
+        'default',
+        [
+            'jest-junit',
+            {
+                outputDirectory: 'test-results',
+                outputName: 'junit.xml',
+                classNameTemplate: '{classname}',
+                titleTemplate: '{title}',
+                ancestorSeparator: ' › ',
+                usePathForSuiteName: true,
+            },
+        ],
     ],
 
     // An object that configures minimum threshold enforcement for coverage results

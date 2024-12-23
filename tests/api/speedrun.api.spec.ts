@@ -97,7 +97,10 @@ describe('@api speedrun', () => {
             expect(response.body.details.checkResult).toHaveProperty('isUnreasonable', true);
             expect(response.body.details.checkResult).toHaveProperty('standardDeviations');
             expect(response.body.details.checkResult.standardDeviations).toBeGreaterThan(2);
-            expect(response.body.details.checkResult).toHaveProperty('message', 'Speedrun is an unreasonable world record improvement');
+            expect(response.body.details.checkResult).toHaveProperty(
+                'message',
+                'Speedrun is an unreasonable world record improvement',
+            );
         });
 
         test('should get a specific speedrun by id', async () => {

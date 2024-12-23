@@ -9,13 +9,15 @@ import cors from 'cors';
 
 const app: Express = express();
 
-app.use(cors({
-    origin: true,
-    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'X-API-KEY'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-}));
+app.use(
+    cors({
+        origin: true,
+        methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'X-API-KEY'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    }),
+);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

@@ -55,7 +55,7 @@ export default class SpeedrunDBService extends DBService {
     async getSpeedruns(gameId?: string): Promise<Speedrun[]> {
         let query = this.baseSpeedrunQuery;
         const params: string[] = [];
-        
+
         if (gameId) {
             query += ' WHERE s.gameId = ?';
             params.push(gameId);
