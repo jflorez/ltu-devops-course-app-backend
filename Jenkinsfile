@@ -103,6 +103,7 @@ pipeline {
                 // Install dependencies and build
                 // Configuration in .yarnrc.yml allows lockfile modifications
                 sh 'yarn install'
+                sh 'yarn tsoa'
             }
         }
 
@@ -167,7 +168,7 @@ pipeline {
             steps {
                 script {
                     // Clean up any previous review environment
-                    sh 'docker-compose down || true'
+                    sh 'docker compose down || true'
                     // Deploy to review environment with test configuration
                     // This creates an isolated environment for testing features
                     // Review environment uses different ports to avoid conflicts with production
@@ -176,7 +177,7 @@ pipeline {
                         export ENVIRONMENT_ID=review-${BUILD_NUMBER}
                         export APP_API_PORT=$((APP_API_PORT + 100))
                         export MARIADB_PORT=$((MARIADB_PORT + 100))
-                        docker-compose up --build --wait -d
+                        docker compose up --build --wait -d
                     '''
                 }
             }
@@ -197,7 +198,7 @@ pipeline {
                     // Deploy to production environment using default ports from credentials
                     sh '''
                         export ENVIRONMENT_ID=prod
-                        docker-compose up --build --wait -d
+                        docker compose up --build --wait -d
                     '''
                     
                     // Create a git tag for deployment traceability
@@ -221,7 +222,7 @@ pipeline {
             node('') {
                 // Ensure cleanup of resources even if the pipeline fails
                 // This prevents resource leaks and stuck environments
-                sh 'docker-compose down || true'
+                sh 'docker compose down || true'
             }
         }
         // Always perform these actions
