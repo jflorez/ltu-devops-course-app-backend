@@ -32,6 +32,7 @@ export default tseslint.config(
             'prefer-promise-reject-errors': 'off',
             '@typescript-eslint/prefer-promise-reject-errors': 'off',
             '@typescript-eslint/no-misused-promises': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
         },
     },
 );
