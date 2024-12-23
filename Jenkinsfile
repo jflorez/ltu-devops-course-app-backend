@@ -183,6 +183,7 @@ pipeline {
 
         // Stage 8: Production Deployment
         stage('Deploy Production') {
+            agent any
             when {
                 // Only deploy to production from the main branch
                 // This ensures production stability and controlled releases
