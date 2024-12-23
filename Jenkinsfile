@@ -58,6 +58,7 @@ pipeline {
         // Securely manage environment variables using Jenkins credentials
         // This prevents sensitive data from being exposed in the code
         DOCKER_COMPOSE_ENV = credentials('speedrun-app-env')
+        TESTCONTAINERS_RYUK_DISABLED = true
     }
 
     triggers {
