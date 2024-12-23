@@ -50,15 +50,9 @@
  */
 
 pipeline {
-    // Allows pipeline to run on any available Jenkins agent
-    agent {
-        // Use Node 22 container for all test-related stages
-        // This ensures a consistent environment for all testing phases
-        docker {
-            image 'node:22'
-            reuseNode true
-        }
-    }
+    // Use the same Jenkins agent for all stages
+    // This ensures consistent environment and workspace across the pipeline
+    agent any
 
     environment {
         // Securely manage environment variables using Jenkins credentials
@@ -149,7 +143,6 @@ pipeline {
 
         // Stage 6: Container Image Building
         stage('Build') {
-            agent any
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
@@ -159,7 +152,6 @@ pipeline {
 
         // Stage 7: Review Environment Deployment
         stage('Deploy Review') {
-            agent any
             when {
                 // Only deploy review environments for feature branches
                 // This enables testing and review before merging to main
@@ -185,7 +177,6 @@ pipeline {
 
         // Stage 8: Production Deployment
         stage('Deploy Production') {
-            agent any
             when {
                 // Only deploy to production from the main branch
                 // This ensures production stability and controlled releases
