@@ -211,7 +211,7 @@ pipeline {
         }
         // Always perform these actions
         always {
-            node {
+            node('node-agent') {
                 // Clean up test artifacts to save disk space
                 cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
             }
