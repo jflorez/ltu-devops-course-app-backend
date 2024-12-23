@@ -6,9 +6,9 @@
   "main": "build/api/server.js",
   "scripts": {
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "eslint": "eslint .",
-    "prettier": "prettier . --write",
-    "prettier-check": "prettier . --check",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "tsoa": "tsoa spec-and-routes",
     "start-dev": "nodemon --ext ts,js,mjs,cjs,json --ignore './build/' --exec 'yarn tsoa && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts'",
     "start": "yarn tsoa && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts",
