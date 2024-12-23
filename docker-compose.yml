@@ -1,0 +1,56 @@
+services:
+  speedrun-app:
+    container_name: speedrun-app-${ENVIRONMENT_ID}
+    build:
+      context: .
+    restart: always
+    networks:
+      - speedrun-network
+    environment:
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_HOST=speedrun-db
+      - APP_API_TOKEN=${APP_API_TOKEN}
+      - APP_API_PORT=${APP_API_PORT}
+    ports:
+      - ${APP_API_PORT}:${APP_API_PORT}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://speedrun-app:${APP_API_PORT}/api/health']
+      interval: 10s
+      timeout: 30s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      speedrun-db:
+        condition: service_healthy
+
+  speedrun-db:
+    container_name: speedrun-db-${ENVIRONMENT_ID}
+    image: mariadb
+    command: ['--max_connections=100']
+    healthcheck:
+      interval: 5s
+      retries: 3
+      test: ['CMD', 'healthcheck.sh', '--su-mysql', '--connect', '--innodb_initialized']
+      timeout: 30s
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_PORT=${MARIADB_PORT}
+    networks:
+      - speedrun-network
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      - ./db/:/docker-entrypoint-initdb.d/:ro
+    ports:
+      - ${MARIADB_PORT}:${MARIADB_PORT}
+
+volumes:
+  mariadb-data:
+
+networks:
+  speedrun-network: {}
