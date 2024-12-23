@@ -166,8 +166,6 @@ pipeline {
                         export MARIADB_PORT=$((MARIADB_PORT + 100))
                         docker-compose up --build --wait -d
                     '''
-                    echo "API available on port: $((APP_API_PORT + 100))"
-                    echo "Database available on port: $((MARIADB_PORT + 100))"
                 }
             }
         }
