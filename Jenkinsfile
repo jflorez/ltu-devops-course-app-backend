@@ -33,6 +33,7 @@
  *    - Automated testing on every code change
  *    - Code quality checks (linting and formatting)
  *    - Regular integration into the main branch
+ *    - Containerized test environments for consistency
  * 
  * 2. Continuous Deployment (CD):
  *    - Automated deployments to different environments
@@ -45,11 +46,19 @@
  *    - Automated cleanup of resources
  *    - Version tagging for traceability
  *    - Secure credential management
+ *    - Consistent test environments using containers
  */
 
 pipeline {
     // Allows pipeline to run on any available Jenkins agent
-    agent any
+    agent {
+        // Use Node 22 container for all test-related stages
+        // This ensures a consistent environment for all testing phases
+        docker {
+            image 'node:22'
+            reuseNode true
+        }
+    }
 
     environment {
         // Securely manage environment variables using Jenkins credentials
@@ -83,7 +92,7 @@ pipeline {
                 checkout scm
             }
         }
-
+        
         // Stage 2: Development Environment Setup
         stage('Setup') {
             steps {
@@ -138,6 +147,7 @@ pipeline {
 
         // Stage 6: Container Image Building
         stage('Build') {
+            agent any
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
@@ -147,6 +157,7 @@ pipeline {
 
         // Stage 7: Review Environment Deployment
         stage('Deploy Review') {
+            agent any
             when {
                 // Only deploy review environments for feature branches
                 // This enables testing and review before merging to main
