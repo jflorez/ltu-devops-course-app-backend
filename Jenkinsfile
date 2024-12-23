@@ -205,9 +205,11 @@ pipeline {
     post {
         // Handle pipeline failures
         failure {
-            // Ensure cleanup of resources even if the pipeline fails
-            // This prevents resource leaks and stuck environments
-            sh 'docker-compose down || true'
+            node('') {
+                // Ensure cleanup of resources even if the pipeline fails
+                // This prevents resource leaks and stuck environments
+                sh 'docker-compose down || true'
+            }
         }
         // Always perform these actions
         always {
