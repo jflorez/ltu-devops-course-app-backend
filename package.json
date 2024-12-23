@@ -25,6 +25,7 @@
     "inversify-binding-decorators": "^4.0.0",
     "lodash": "^4.17.21",
     "mariadb": "^3.3.0",
+    "node-gyp": "^11.0.0",
     "reflect-metadata": "^0.2.2",
     "superagent": "^9.0.2",
     "swagger-ui-express": "^5.0.1",
