@@ -76,7 +76,6 @@ pipeline {
         
         // Database parameters
         string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
-        string(name: 'MARIADB_HOST', defaultValue: 'speedrun-db', description: 'Database host')
         string(name: 'MARIADB_USER', defaultValue: 'lhuser', description: 'Database user for application')
         string(name: 'MARIADB_PORT', defaultValue: '3306', description: 'Port number for MariaDB')
     }
@@ -86,7 +85,7 @@ pipeline {
         APP_API_TOKEN = credentials('app-api-token')
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
         MARIADB_PASSWORD = credentials('mariadb-password')
-        
+        MARIADB_HOST = 'host.docker.internal'
         // Environment identifier
         // Will be overridden in Review and Production stages
         ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'review-${BUILD_NUMBER}'}"
