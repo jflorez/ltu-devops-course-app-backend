@@ -165,6 +165,9 @@ pipeline {
 
         // Stage 5: Integration Testing
         stage('Integration Tests') {
+            environment {
+                ENVIRONMENT_ID = 'review-${BUILD_NUMBER}'
+            }
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
