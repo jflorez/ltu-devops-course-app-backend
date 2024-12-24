@@ -166,7 +166,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
-                ENVIRONMENT_ID = 'review-$BUILD_NUMBER'
+                ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
             }
             steps {
                 // Run integration tests that verify component interactions
