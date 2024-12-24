@@ -204,7 +204,7 @@ pipeline {
                 script {
                     // Clean up any previous review environment
                     sh '''
-                        docker compose down || true
+                        docker compose down
                         docker compose up --wait -d
                     '''
                 }
