@@ -47,7 +47,7 @@ services:
       - mariadb-data:/var/lib/mysql
       - ./db/:/docker-entrypoint-initdb.d/:ro
     ports:
-      - ${MARIADB_PORT}:${MARIADB_PORT}
+      - ${MARIADB_PORT}:3306
 
 volumes:
   mariadb-data:

@@ -89,7 +89,7 @@ pipeline {
         
         // Environment identifier
         // Will be overridden in Review and Production stages
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : "review-${BUILD_NUMBER}"}"
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'review-${BUILD_NUMBER}'}"
         
         // Test configuration
         TESTCONTAINERS_RYUK_DISABLED = true  // We handle cleanup ourselves
