@@ -13,14 +13,6 @@ export class DBPoolService {
 
     get pool(): Pool {
         if (this._pool === undefined) {
-            console.debug('Creating new MariaDB pool with the following configuration:');
-            console.debug(`Host: ${process.env.MARIADB_HOST}`);
-            console.debug(`User: ${process.env.MARIADB_USER}`);
-            console.debug(`Password: ${process.env.MARIADB_PASSWORD}`);
-            console.debug(`Database: ${process.env.MARIADB_DATABASE}`);
-            console.debug(`Port: ${process.env.MARIADB_PORT}`);
-            console.debug(`Connection Limit: ${this.limit}`);
-
             this._pool = mariadb.createPool({
                 host: process.env.MARIADB_HOST,
                 user: process.env.MARIADB_USER,
@@ -29,10 +21,6 @@ export class DBPoolService {
                 port: Number(process.env.MARIADB_PORT),
                 connectionLimit: this.limit,
             });
-
-            console.debug('MariaDB pool created successfully.');
-        } else {
-            console.debug('Using existing MariaDB pool.');
         }
         return this._pool;
     }
