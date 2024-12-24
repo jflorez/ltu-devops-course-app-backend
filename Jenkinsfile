@@ -155,7 +155,7 @@ pipeline {
                     // Remove skipped unit tests from junit.xml before publishing
                     sh '''
                         # Use sed to remove testcase nodes with skipped elements and @unit in classname
-                        sed -i '/<testcase.*classname="[^"]*@unit[^"]*".*>.*<skipped\/>.*<\/testcase>/d' test-results/junit.xml
+                        sed -i '/<testcase.*classname="[^"]*@unit[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
@@ -188,7 +188,7 @@ pipeline {
                     // Remove skipped unit tests from junit.xml before publishing
                     sh '''
                         # Use sed to remove testcase nodes with skipped elements and @api or @db in classname
-                        sed -i '/<testcase.*classname="[^"]*\(@api\|@db\)[^"]*".*>.*<skipped\/>.*<\/testcase>/d' test-results/junit.xml
+                        sed -i '/<testcase.*classname="[^"]*(@api|@db)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
