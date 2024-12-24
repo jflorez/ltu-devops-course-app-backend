@@ -88,10 +88,9 @@ pipeline {
         MARIADB_HOST = 'host.docker.internal'
         // Environment identifier
         // Will be overridden in Review and Production stages
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'review-${env.BUILD_NUMBER}'}"
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : env.BRANCH_NAME == 'develop' ? 'test' : 'review-${env.BUILD_NUMBER}'}"
         
-        // Test configuration
-        TESTCONTAINERS_RYUK_DISABLED = true  // We handle cleanup ourselves
+        TESTCONTAINERS_RYUK_DISABLED = true  
     }
 
     triggers {
@@ -136,7 +135,7 @@ pipeline {
         }
 
         // Stage 3: Code Quality Checks
-        stage('Lint & Format Check') {
+        stage('Lint') {
             steps {
                 // Static code analysis and style checking
                 // These checks ensure code consistency and catch potential issues early
@@ -147,24 +146,44 @@ pipeline {
             }
         }
 
-        // Stage 5: Integration Testing
-        stage('Unit and Integration Tests') {
-            // These tests are always run in review environments,
-            // so we set the environment ID to the build number
-            // This ensures that the tests are run in a consistent and isolated environment
+        stage('Unit Tests') {
+            steps {
+                sh 'yarn test -t @unit'
+            }
+        }
+
+        stage('Integration Tests') {
             environment {
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
-            steps {
-                sh 'yarn db:down -v'
-                sh 'yarn db:up'
-                sh 'yarn test'
+            stages {
+                stage('Deploy Review Environment') {
+                    steps {
+                        sh 'yarn db:down -v'
+                        sh 'yarn db:up'
+                    }
+                }
+
+                // Stage 5: Integration Testing
+                stage('Run Integration Tests') {
+                    steps {
+                        sh 'yarn test -t "@api|@db"'
+                    }
+                    post {
+                        always {
+                            junit 'test-results/junit.xml'
+                        }
+                    }
+                }
             }
             post {
                 always {
-                    sh 'yarn db:down -v'
-                    junit 'test-results/junit.xml'
+                    stage('Destroy Review Environment') {
+                        steps {
+                            sh 'yarn db:down -v'
+                        }
+                    }
                 }
             }
         }
@@ -179,11 +198,11 @@ pipeline {
         }
 
         // Stage 7: Review Environment Deployment
-        stage('Deploy Review') {
+        stage('Deploy Test Environment') {
             when {
-                // Only deploy review environments for feature branches
+                // Only deploy the test environment for feature the develop branch
                 // This enables testing and review before merging to main
-                expression { BRANCH_NAME != 'main' && BRANCH_NAME.startsWith('feature/') }
+                branch 'develop'
             }
             steps {
                 script {
