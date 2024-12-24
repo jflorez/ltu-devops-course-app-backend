@@ -147,33 +147,18 @@ pipeline {
             }
         }
 
-        // Stage 4: Unit Testing
-        stage('Unit Tests') {
-            steps {
-                // Run unit tests for all branches
-                // '@unit' tag helps categorize and run specific test types
-                sh 'yarn test -t "@unit"'
-            }
-            post {
-                // Archive test results for Jenkins to track test history
-                // This enables test trend analysis and reporting
-                always {
-                    junit 'test-results/junit.xml'
-                }
-            }
-        }
-
         // Stage 5: Integration Testing
-        stage('Integration Tests') {
+        stage('Unit and Integration Tests') {
+            // These tests are always run in review environments,
+            // so we set the environment ID to the build number
+            // This ensures that the tests are run in a consistent and isolated environment
             environment {
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
             }
             steps {
-                // Run integration tests that verify component interactions
-                // '@api' and '@db' tags indicate tests that check API and database functionality
                 sh 'yarn db:down -v'
                 sh 'yarn db:up'
-                sh 'yarn test -t "@api|@db"'
+                sh 'yarn test'
             }
             post {
                 always {
