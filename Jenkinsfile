@@ -150,35 +150,37 @@ pipeline {
             steps {
                 sh 'yarn test -t @unit'
             }
+            post {
+                always {
+                    junit 'test-results/junit.xml'
+                    sh 'rm -rf test-results'
+                }
+            }
         }
 
-        stage('Integration Tests') {
+        stage('Deploy Review Environment') {
             environment {
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
-            stages {
-                stage('Deploy Review Environment') {
-                    steps {
-                        sh 'yarn db:down -v || true'
-                        sh 'yarn db:up'
-                    }
-                }
+            steps {
+                sh 'yarn db:down -v || true'
+                sh 'yarn db:up'
+            }
+        }
 
-                // Stage 5: Integration Testing
-                stage('Run Integration Tests') {
-                    steps {
-                        sh 'yarn test -t "@api|@db"'
-                    }
-                    post {
-                        always {
-                            junit 'test-results/junit.xml'
-                        }
-                    }
-                }
+        // Stage 5: Integration Testing
+        stage('Run Integration Tests') {
+            environment {
+                ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
+                MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
+            }
+            steps {
+                sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
+                    junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
                 }
             }
@@ -202,9 +204,9 @@ pipeline {
             }
             steps {
                 script {
-                    // Clean up any previous review environment
+                    // Clean up any previous test environment
                     sh '''
-                        docker compose down
+                        docker compose down --remove-orphans
                         docker compose up --wait -d
                     '''
                 }
@@ -221,7 +223,7 @@ pipeline {
             steps {
                 script {
                     // Clean up existing deployment
-                    sh 'docker compose down'
+                    sh 'docker compose down --remove-orphans'
                     sh 'docker compose up --wait -d'
                     
                     // Create a git tag for deployment traceability
