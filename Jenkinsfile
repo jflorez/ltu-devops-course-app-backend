@@ -95,8 +95,6 @@ pipeline {
         TESTCONTAINERS_RYUK_DISABLED = true  // We handle cleanup ourselves
     }
 
-    
-
     triggers {
         // Continuous Integration: Regular polling of source code
         // 'H' allows Jenkins to distribute load by picking a random minute within the 5-minute window
