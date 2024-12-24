@@ -206,12 +206,8 @@ pipeline {
             steps {
                 script {
                     // Clean up existing deployment
-                    sh '''
-                        docker compose down || true
-                        
-                        export ENVIRONMENT_ID=prod
-                        docker compose up --build --wait -d
-                    '''
+                    sh 'docker compose down || true'
+                    sh 'docker compose up --build --wait -d'
                     
                     // Create a git tag for deployment traceability
                     // This helps track what code is in production
