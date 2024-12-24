@@ -174,7 +174,7 @@ pipeline {
                     mariadb -h ${MARIADB_HOST} -P ${MARIADB_PORT} -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES;" | tee mariadb_tables_output.txt
                     cat mariadb_tables_output.txt
                 '''
-                // sh 'yarn test -t "@api|@db"'
+                sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
