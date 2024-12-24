@@ -205,7 +205,7 @@ pipeline {
                     // Clean up any previous review environment
                     sh '''
                         docker compose down || true
-                        docker compose up --build --wait -d
+                        docker compose up --wait -d
                     '''
                 }
             }
@@ -222,7 +222,7 @@ pipeline {
                 script {
                     // Clean up existing deployment
                     sh 'docker compose down || true'
-                    sh 'docker compose up --build --wait -d'
+                    sh 'docker compose up --wait -d'
                     
                     // Create a git tag for deployment traceability
                     // This helps track what code is in production
