@@ -16,7 +16,7 @@ export default async function setup(globalConfig: Config.GlobalConfig, projectCo
                 `${chalk.bgCyan.bold('\n DOCKER COMPOSE ')} ${chalk.blue('Setting up docker compose environment')}`,
             );
             const environment = await new DockerComposeEnvironment('.', 'docker-compose.yml')
-                .withWaitStrategy('speedrun-db', Wait.forHealthCheck())
+                // .withWaitStrategy('speedrun-db', Wait.forHealthCheck())
                 .withEnvironment({
                     MARIADB_ROOT_PASSWORD: process.env.MARIADB_ROOT_PASSWORD!,
                     MARIADB_PASSWORD: process.env.MARIADB_PASSWORD!,
