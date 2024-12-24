@@ -29,7 +29,10 @@ services:
 
   speedrun-db:
     container_name: speedrun-db-${ENVIRONMENT_ID}
-    image: mariadb
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    # image: mariadb
     command: ['--max_connections=100']
     healthcheck:
       interval: 5s
@@ -46,7 +49,7 @@ services:
       - speedrun-network
     volumes:
       - mariadb-data:/var/lib/mysql
-      - './db:/docker-entrypoint-initdb.d/:ro'
+      # - './db:/docker-entrypoint-initdb.d/:ro'
     ports:
       - '${MARIADB_PORT}:3306'
 
