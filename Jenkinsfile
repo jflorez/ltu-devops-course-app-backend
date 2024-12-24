@@ -201,11 +201,6 @@ pipeline {
                     // Clean up any previous review environment
                     sh '''
                         docker compose down || true
-                        
-                        # Calculate review environment ports (prod ports + 100)
-                        export ENVIRONMENT_ID=review-${BUILD_NUMBER}
-                        export APP_API_PORT=$((${params.APP_API_PORT} + 100))
-                        export MARIADB_PORT=$((${params.MARIADB_PORT} + 100))
                         docker compose up --build --wait -d
                     '''
                 }
