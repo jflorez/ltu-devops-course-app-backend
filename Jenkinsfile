@@ -154,6 +154,7 @@ pipeline {
             // This ensures that the tests are run in a consistent and isolated environment
             environment {
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
+                MARIADB_PORT = "${4000 + BUILD_NUMBER.toInteger()}"
             }
             steps {
                 sh 'yarn db:down -v'
