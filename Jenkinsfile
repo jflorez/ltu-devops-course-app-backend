@@ -9,32 +9,38 @@
  * - Only trunk (main) gets deployed to production
  *
  * Required Jenkins Credentials:
- * Each sensitive value is stored as a separate Jenkins credential for better security
- * 
- * Application Credentials:
+ * Sensitive data is stored as Jenkins credentials:
  * - app-api-token: Security token for API authentication
- * - app-api-port: Port number for the application API
- *   - Production: Uses the port specified in credentials
+ * - mariadb-root-password: Root password for MariaDB
+ * - mariadb-password: Database user's password
+ *
+ * Pipeline Parameters:
+ * Configurable values that can be set per build:
+ * 
+ * Application Parameters:
+ * - APP_API_PORT: Port number for the application API (default: 3001)
+ *   - Production: Uses the specified port
  *   - Review: Uses port + 100 (e.g., if prod is 3000, review is 3100)
  *
- * Database Credentials:
- * - mariadb-root-password: Root password for MariaDB
- * - mariadb-user: Database user for application
- * - mariadb-password: Database user's password
- * - mariadb-database: Name of the application database
- * - mariadb-port: Port number for MariaDB
- *   - Production: Uses the port specified in credentials
+ * Database Parameters:
+ * - MARIADB_DATABASE: Name of the application database (default: planitlh)
+ * - MARIADB_HOST: Database host (default: speedrun-db)
+ * - MARIADB_USER: Database user for application (default: lhuser)
+ * - MARIADB_PORT: Port number for MariaDB (default: 3306)
+ *   - Production: Uses the specified port
  *   - Review: Uses port + 100 (e.g., if prod is 3306, review is 3406)
  *
- * Note: ENVIRONMENT_ID is automatically set by the pipeline stages
+ * Environment Identifier:
+ * ENVIRONMENT_ID is set automatically based on deployment type:
  * - 'review-${BUILD_NUMBER}' for feature branch deployments
  * - 'prod' for production deployments
  *
- * Jenkins Credentials Management:
- * - Each credential is stored separately for fine-grained access control
+ * Jenkins Security Management:
+ * - Sensitive data (passwords, tokens) stored as Jenkins credentials
+ * - Non-sensitive data configurable via pipeline parameters
  * - Credentials are automatically masked in logs
- * - Values are securely injected into the pipeline environment
- * - Using individual credentials follows the principle of least privilege
+ * - Parameters can be modified per build
+ * - Some values are overridden for specific deployment types
  *
  * DevOps Learning Points:
  * 1. Continuous Integration (CI):
@@ -47,13 +53,15 @@
  *    - Automated deployments to different environments
  *    - Feature branch deployments for review
  *    - Production deployments from main branch
+ *    - Environment-specific configurations
  * 
  * 3. Best Practices:
  *    - Environment separation (review vs prod)
  *    - Port isolation between environments
  *    - Automated cleanup of resources
  *    - Version tagging for traceability
- *    - Secure credential management with individual secrets
+ *    - Secure credential management
+ *    - Parameterized builds for flexibility
  *    - Consistent test environments using containers
  */
 
@@ -62,24 +70,32 @@ pipeline {
     // This ensures consistent environment and workspace across the pipeline
     agent any
 
-    environment {
-        // Load the environment file containing all variables
-        // This file includes all application configurations
-        DOCKER_COMPOSE_ENV = credentials('speedrun-app-env')
+    parameters {
+        // Application parameters
+        string(name: 'APP_API_PORT', defaultValue: '3001', description: 'Port number for the application API')
         
-        // Extract all environment variables from the credentials file
-        // This makes them available to the pipeline and docker-compose
-        VARS = """
-            set +x  # Prevent credentials from being shown in logs
-            . ${DOCKER_COMPOSE_ENV}
-            env > .env
-            rm ${DOCKER_COMPOSE_ENV}
-        """
-        
-        // Disable Testcontainers Ryuk container for cleanup
-        // We handle cleanup ourselves in the post section
-        TESTCONTAINERS_RYUK_DISABLED = true
+        // Database parameters
+        string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
+        string(name: 'MARIADB_HOST', defaultValue: 'speedrun-db', description: 'Database host')
+        string(name: 'MARIADB_USER', defaultValue: 'lhuser', description: 'Database user for application')
+        string(name: 'MARIADB_PORT', defaultValue: '3306', description: 'Port number for MariaDB')
     }
+
+    environment {
+        // Sensitive data stored as credentials
+        APP_API_TOKEN = credentials('app-api-token')
+        MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
+        MARIADB_PASSWORD = credentials('mariadb-password')
+        
+        // Environment identifier
+        // Will be overridden in Review and Production stages
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : "review-${BUILD_NUMBER}"}"
+        
+        // Test configuration
+        TESTCONTAINERS_RYUK_DISABLED = true  // We handle cleanup ourselves
+    }
+
+    
 
     triggers {
         // Continuous Integration: Regular polling of source code
@@ -105,11 +121,6 @@ pipeline {
                 // Fetch the latest code from version control
                 // 'scm' refers to the Source Control Management system configured in the job
                 checkout scm
-                
-                // Load environment variables from credentials
-                sh """
-                    ${VARS}
-                """
             }
         }
         
@@ -119,7 +130,6 @@ pipeline {
                 // Setup Node.js package management using corepack
                 // This ensures consistent package manager versions across builds
                 sh '''
-                    source .env
                     corepack enable
                     corepack prepare yarn@4.5.3 --activate
                     yarn install
@@ -134,7 +144,6 @@ pipeline {
                 // Static code analysis and style checking
                 // These checks ensure code consistency and catch potential issues early
                 sh '''
-                    source .env
                     yarn lint
                     yarn format:check
                 '''
@@ -146,10 +155,7 @@ pipeline {
             steps {
                 // Run unit tests for all branches
                 // '@unit' tag helps categorize and run specific test types
-                sh '''
-                    source .env
-                    yarn test -t "@unit"
-                '''
+                sh 'yarn test -t "@unit"'
             }
             post {
                 // Archive test results for Jenkins to track test history
@@ -165,10 +171,7 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh '''
-                    source .env
-                    yarn test -t "@api|@db"
-                '''
+                sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
@@ -182,10 +185,7 @@ pipeline {
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
-                sh '''
-                    source .env
-                    docker compose build
-                '''
+                sh 'docker compose build'
             }
         }
 
@@ -200,13 +200,12 @@ pipeline {
                 script {
                     // Clean up any previous review environment
                     sh '''
-                        source .env
                         docker compose down || true
                         
                         # Calculate review environment ports (prod ports + 100)
                         export ENVIRONMENT_ID=review-${BUILD_NUMBER}
-                        export APP_API_PORT=$((APP_API_PORT + 100))
-                        export MARIADB_PORT=$((MARIADB_PORT + 100))
+                        export APP_API_PORT=$((${params.APP_API_PORT} + 100))
+                        export MARIADB_PORT=$((${params.MARIADB_PORT} + 100))
                         docker compose up --build --wait -d
                     '''
                 }
@@ -224,7 +223,6 @@ pipeline {
                 script {
                     // Clean up existing deployment
                     sh '''
-                        source .env
                         docker compose down || true
                         
                         export ENVIRONMENT_ID=prod
@@ -238,8 +236,8 @@ pipeline {
                         git push origin --tags
                     """
                     echo "Production deployment complete"
-                    echo "API available on port: ${APP_API_PORT}"
-                    echo "Database available on port: ${MARIADB_PORT}"
+                    echo "API available on port: ${params.APP_API_PORT}"
+                    echo "Database available on port: ${params.MARIADB_PORT}"
                 }
             }
         }
@@ -252,10 +250,7 @@ pipeline {
             node('') {
                 // Ensure cleanup of resources even if the pipeline fails
                 // This prevents resource leaks and stuck environments
-                sh '''
-                    source .env || true
-                    docker compose down || true
-                '''
+                sh 'docker compose down || true'
             }
         }
         // Always perform these actions
