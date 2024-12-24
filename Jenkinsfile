@@ -168,13 +168,8 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh 'ls -lha db && yarn db:up'
-                // Check if the 'Speedrun' table exists in the database
-                sh '''
-                    mariadb -h ${MARIADB_HOST} -P ${MARIADB_PORT} -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES;" | tee mariadb_tables_output.txt
-                    cat mariadb_tables_output.txt
-                '''
-                sh 'yarn test -t "@api|@db"'
+                sh 'yarn db:up'
+                sh 'yarn test -t "@db"'
             }
             post {
                 always {
@@ -244,12 +239,6 @@ pipeline {
 
     // Post-build actions
     post {
-        // Handle pipeline failures
-        failure {
-            // Ensure cleanup of resources even if the pipeline fails
-            // This prevents resource leaks and stuck environments
-            sh 'docker compose down || true'
-        }
         // Always perform these actions
         always {
             // Clean up test artifacts to save disk space
