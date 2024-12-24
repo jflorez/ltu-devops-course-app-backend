@@ -168,12 +168,10 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh 'yarn db:up'
                 sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
-                    sh 'yarn db:down'
                     junit 'test-results/junit.xml'
                 }
             }
