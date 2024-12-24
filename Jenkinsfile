@@ -168,10 +168,10 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
-                sh 'ls -lha && yarn db:up'
+                sh 'ls -lha db && yarn db:up'
                 // Check if the 'Speedrun' table exists in the database
                 sh '''
-                    mariadb -h ${MARIADB_HOST} -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES;" | tee mariadb_tables_output.txt
+                    mariadb -h ${MARIADB_HOST} -P ${MARIADB_PORT} -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES;" | tee mariadb_tables_output.txt
                     cat mariadb_tables_output.txt
                 '''
                 // sh 'yarn test -t "@api|@db"'
@@ -230,10 +230,10 @@ pipeline {
                     
                     // Create a git tag for deployment traceability
                     // This helps track what code is in production
-                    sh """
-                        git tag -a "deploy-\$(date +%Y%m%d-%H%M%S)" -m "Production deployment"
-                        git push origin --tags
-                    """
+                    // sh """
+                    //     git tag -a "deploy-\$(date +%Y%m%d-%H%M%S)" -m "Production deployment"
+                    //     git push origin --tags
+                    // """
                     echo "Production deployment complete"
                     echo "API available on port: ${params.APP_API_PORT}"
                     echo "Database available on port: ${params.MARIADB_PORT}"
@@ -246,18 +246,14 @@ pipeline {
     post {
         // Handle pipeline failures
         failure {
-            node('') {
-                // Ensure cleanup of resources even if the pipeline fails
-                // This prevents resource leaks and stuck environments
-                sh 'docker compose down || true'
-            }
+            // Ensure cleanup of resources even if the pipeline fails
+            // This prevents resource leaks and stuck environments
+            sh 'docker compose down || true'
         }
         // Always perform these actions
         always {
-            node('') {
-                // Clean up test artifacts to save disk space
-                cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
-            }
+            // Clean up test artifacts to save disk space
+            cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
         }
     }
 }
