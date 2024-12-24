@@ -155,7 +155,9 @@ pipeline {
                     // Remove skipped tests that are not unit tests from junit.xml before publishing
                     sh '''
                         # Use sed to remove testcase nodes with skipped elements that don't have @unit in classname
+                        cat test-results/junit.xml
                         sed -i '/<testcase.*classname="[^"]*(?<!@unit)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
+                        cat test-results/junit.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
@@ -185,7 +187,7 @@ pipeline {
             }
             post {
                 always {
-                    // Remove non-integration tests from junit.xml before publishing
+                    // Remove skipped tests that are not integration tests from junit.xml before publishing
                     sh '''
                         # Use sed to remove testcase nodes with skipped elements that don't have @api or @db in classname
                         sed -i '/<testcase.*classname="[^"]*(?<!@api|@db)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
