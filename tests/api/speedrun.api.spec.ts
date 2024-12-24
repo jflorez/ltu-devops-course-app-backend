@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeAll } from '@jest/globals';
+import { describe, expect, test, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import { app } from '../../src/app.js';
 import { Speedrun, Game, User, Category } from '../../src/common/api/data/Speedrun.js';
@@ -30,8 +30,10 @@ let userId: string;
 let categoryId: string;
 
 describe('@api speedrun', () => {
+    let dbPoolService: DBPoolService;
+
     beforeAll(async () => {
-        const dbPoolService = new DBPoolService();
+        dbPoolService = new DBPoolService();
         const gameDBService = new GameDBService(dbPoolService);
         const userDBService = new UserDBService(dbPoolService);
         const categoryDBService = new CategoryDBService(dbPoolService);
@@ -54,6 +56,11 @@ describe('@api speedrun', () => {
             testSpeedruns.push({ ...speedrun, id });
         }
     });
+
+    afterAll(async () => {
+        await dbPoolService.pool.end();
+    });
+
     describe('list and create speedruns', () => {
         test('should get all speedruns', async () => {
             const response = await request(app).get(`/api/speedruns?gameId=${gameId}`).set('X-API-KEY', apiKey);
