@@ -88,7 +88,7 @@ pipeline {
         MARIADB_HOST = 'host.docker.internal'
         // Environment identifier
         // Will be overridden in Review and Production stages
-        ENVIRONMENT_ID = '${env.BRANCH_NAME == "main" ? "prod" : "review-${env.BUILD_NUMBER}"}'
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'review-${env.BUILD_NUMBER}'}"
         
         // Test configuration
         TESTCONTAINERS_RYUK_DISABLED = true  // We handle cleanup ourselves
@@ -153,8 +153,8 @@ pipeline {
             // so we set the environment ID to the build number
             // This ensures that the tests are run in a consistent and isolated environment
             environment {
-                ENVIRONMENT_ID = 'review-${env.BUILD_NUMBER}'
-                MARIADB_PORT = '${4000 + (BUILD_NUMBER.toInteger() % 1000)}' // Prevent port number from getting too large
+                ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
+                MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
                 sh 'yarn db:down -v'
@@ -211,13 +211,13 @@ pipeline {
                     
                     // Create a git tag for deployment traceability
                     // This helps track what code is in production
-                    // sh '''
-                    //     git tag -a 'deploy-$(date +%Y%m%d-%H%M%S)' -m 'Production deployment'
+                    // sh """
+                    //     git tag -a "deploy-\$(date +%Y%m%d-%H%M%S)" -m "Production deployment"
                     //     git push origin --tags
-                    // '''
-                    echo 'Production deployment complete'
-                    echo 'API available on port: ${params.APP_API_PORT}'
-                    echo 'Database available on port: ${params.MARIADB_PORT}'
+                    // """
+                    echo "Production deployment complete"
+                    echo "API available on port: ${params.APP_API_PORT}"
+                    echo "Database available on port: ${params.MARIADB_PORT}"
                 }
             }
         }
