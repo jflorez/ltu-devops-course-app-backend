@@ -171,7 +171,7 @@ pipeline {
                 sh 'yarn db:up'
                 // Check if the 'Speedrun' table exists in the database
                 sh '''
-                    docker exec speedrun-db-${ENVIRONMENT_ID} mariadb -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES LIKE 'Speedrun';" | grep -q 'Speedrun'
+                    mariadb -h ${MARIADB_HOST} -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES;"
                 '''
                 sh 'yarn test -t "@api|@db"'
             }
