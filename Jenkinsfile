@@ -152,12 +152,16 @@ pipeline {
             }
             post {
                 always {
-                    // Remove skipped tests that are not unit tests from junit.xml before publishing
+                    // Remove test suites that don't contain @unit tests from junit.xml before publishing
                     sh '''
-                        # Use sed to remove testcase nodes with skipped elements that don't have @unit in classname
-                        cat test-results/junit.xml
-                        sed -i '/<testcase.*classname="[^"]*(?<!@unit)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
-                        cat test-results/junit.xml
+                        # Create temp file
+                        cp test-results/junit.xml test-results/junit.tmp.xml
+                        
+                        # Remove testsuite elements not containing @unit
+                        xmlstarlet ed -d "//testsuite[not(contains(@name,'@unit'))]" test-results/junit.tmp.xml > test-results/junit.xml
+                        
+                        # Clean up temp file
+                        rm test-results/junit.tmp.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
@@ -187,10 +191,16 @@ pipeline {
             }
             post {
                 always {
-                    // Remove skipped tests that are not integration tests from junit.xml before publishing
+                    // Remove test suites that don't contain @api or @db tests from junit.xml before publishing
                     sh '''
-                        # Use sed to remove testcase nodes with skipped elements that don't have @api or @db in classname
-                        sed -i '/<testcase.*classname="[^"]*(?<!@api|@db)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
+                        # Create temp file
+                        cp test-results/junit.xml test-results/junit.tmp.xml
+                        
+                        # Remove testsuite elements not containing @api or @db
+                        xmlstarlet ed -d "//testsuite[not(contains(@name,'@api') or contains(@name,'@db'))]" test-results/junit.tmp.xml > test-results/junit.xml
+                        
+                        # Clean up temp file
+                        rm test-results/junit.tmp.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
