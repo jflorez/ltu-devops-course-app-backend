@@ -11,6 +11,9 @@ describe('@db speedrun', () => {
         const databases = await pool.query('SHOW DATABASES');
         console.log('Databases:', databases);
 
+        const currentDatabase = await pool.query('SELECT DATABASE() AS currentDatabase');
+        console.log('Current Database:', currentDatabase[0].currentDatabase);
+
         const tables = await pool.query('SHOW TABLES');
         console.log('Tables:', tables);
 
