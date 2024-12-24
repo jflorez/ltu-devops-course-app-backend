@@ -52,4 +52,5 @@ volumes:
   mariadb-data:
 
 networks:
-  speedrun-network: {}
+  speedrun-network:
+    name: speedrun-network-$ENVIRONMENT_ID
