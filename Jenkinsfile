@@ -173,11 +173,11 @@ pipeline {
                 // '@api' and '@db' tags indicate tests that check API and database functionality
                 sh 'yarn db:down -v'
                 sh 'yarn db:up'
-                sh 'yarn test -t "@db"'
+                sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
-                    sh 'yarn db:down'
+                    sh 'yarn db:down -v'
                     junit 'test-results/junit.xml'
                 }
             }
