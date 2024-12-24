@@ -152,10 +152,10 @@ pipeline {
             }
             post {
                 always {
-                    // Remove skipped unit tests from junit.xml before publishing
+                    // Remove skipped tests that are not unit tests from junit.xml before publishing
                     sh '''
-                        # Use sed to remove testcase nodes with skipped elements and @unit in classname
-                        sed -i '/<testcase.*classname="[^"]*@unit[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
+                        # Use sed to remove testcase nodes with skipped elements that don't have @unit in classname
+                        sed -i '/<testcase.*classname="[^"]*(?<!@unit)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
@@ -185,10 +185,10 @@ pipeline {
             }
             post {
                 always {
-                    // Remove skipped unit tests from junit.xml before publishing
+                    // Remove non-integration tests from junit.xml before publishing
                     sh '''
-                        # Use sed to remove testcase nodes with skipped elements and @api or @db in classname
-                        sed -i '/<testcase.*classname="[^"]*(@api|@db)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
+                        # Use sed to remove testcase nodes with skipped elements that don't have @api or @db in classname
+                        sed -i '/<testcase.*classname="[^"]*(?<!@api|@db)[^"]*".*>.*<skipped\\/>.*<\\/testcase>/d' test-results/junit.xml
                     '''
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
