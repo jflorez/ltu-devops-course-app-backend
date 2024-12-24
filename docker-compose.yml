@@ -32,7 +32,7 @@ services:
     healthcheck:
       interval: 5s
       retries: 3
-      test: ['CMD', 'healthcheck.sh', '--su-mysql', '--connect', '--innodb_initialized']
+      test: ['CMD', '/bin/sh', '-c', 'healthcheck.sh --su-mysql --connect --innodb_initialized']
       timeout: 30s
     restart: always
     environment:
