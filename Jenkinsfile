@@ -169,6 +169,10 @@ pipeline {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
                 sh 'yarn db:up'
+                // Check if the 'Speedrun' table exists in the database
+                sh '''
+                    docker exec speedrun-db-${ENVIRONMENT_ID} mariadb -u${MARIADB_USER} -p${MARIADB_PASSWORD} -e "USE ${MARIADB_DATABASE}; SHOW TABLES LIKE 'Speedrun';" | grep -q 'Speedrun'
+                '''
                 sh 'yarn test -t "@api|@db"'
             }
             post {
