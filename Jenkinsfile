@@ -221,7 +221,7 @@ pipeline {
             steps {
                 script {
                     // Clean up existing deployment
-                    sh 'docker compose down || true'
+                    sh 'docker compose down'
                     sh 'docker compose up --wait -d'
                     
                     // Create a git tag for deployment traceability
