@@ -152,6 +152,11 @@ pipeline {
             }
             post {
                 always {
+                    // Remove skipped unit tests from junit.xml before publishing
+                    sh '''
+                        # Use sed to remove testcase nodes with skipped elements and @unit in classname
+                        sed -i '/<testcase.*classname="[^"]*@unit[^"]*".*>.*<skipped\/>.*<\/testcase>/d' test-results/junit.xml
+                    '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
                 }
@@ -170,7 +175,7 @@ pipeline {
         }
 
         // Stage 5: Integration Testing
-        stage('Run Integration Tests') {
+        stage('Integration Tests') {
             environment {
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
@@ -180,6 +185,11 @@ pipeline {
             }
             post {
                 always {
+                    // Remove skipped unit tests from junit.xml before publishing
+                    sh '''
+                        # Use sed to remove testcase nodes with skipped elements and @api or @db in classname
+                        sed -i '/<testcase.*classname="[^"]*\(@api\|@db\)[^"]*".*>.*<skipped\/>.*<\/testcase>/d' test-results/junit.xml
+                    '''
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
                 }
