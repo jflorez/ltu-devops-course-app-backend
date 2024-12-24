@@ -46,7 +46,7 @@ services:
       - speedrun-network
     volumes:
       - mariadb-data:/var/lib/mysql
-      - '${WORKSPACE:-.}/db:/docker-entrypoint-initdb.d/:ro'
+      - './db:/docker-entrypoint-initdb.d/:ro'
     ports:
       - '${MARIADB_PORT}:3306'
 

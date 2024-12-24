@@ -168,6 +168,7 @@ pipeline {
             steps {
                 // Run integration tests that verify component interactions
                 // '@api' and '@db' tags indicate tests that check API and database functionality
+                sh 'yarn db:down -v'
                 sh 'yarn db:up'
                 sh 'yarn test -t "@db"'
             }
