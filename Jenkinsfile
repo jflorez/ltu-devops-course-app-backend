@@ -179,7 +179,7 @@ pipeline {
             }
             post {
                 always {
-                    sh 'yarn db:down -v'
+                    sh 'yarn db:down -v || true'
                 }
             }
         }
