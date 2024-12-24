@@ -160,7 +160,7 @@ pipeline {
             stages {
                 stage('Deploy Review Environment') {
                     steps {
-                        sh 'yarn db:down -v'
+                        sh 'yarn db:down -v || true'
                         sh 'yarn db:up'
                     }
                 }
@@ -179,11 +179,7 @@ pipeline {
             }
             post {
                 always {
-                    stage('Destroy Review Environment') {
-                        steps {
-                            sh 'yarn db:down -v'
-                        }
-                    }
+                    sh 'yarn db:down -v'
                 }
             }
         }
