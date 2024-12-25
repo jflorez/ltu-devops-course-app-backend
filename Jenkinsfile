@@ -159,7 +159,12 @@ pipeline {
                         cp test-results/junit.xml test-results/junit.tmp.xml
                         
                         # Remove testsuite elements not containing @unit, but keep the root <testsuites> element
-                        awk 'BEGIN {print "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>"} /<testsuites/{print; next} /<testsuite/{p=0} /@unit/{p=1} p' test-results/junit.tmp.xml' > test-results/junit.xml
+                        awk 'BEGIN {print "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>"} /<testsuites/{print; next} /<testsuite/{p=0} /@unit/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
+                        
+                        # Append </testsuites> if missing
+                        if ! grep -q '</testsuites>' test-results/junit.xml; then
+                            echo '</testsuites>' >> test-results/junit.xml
+                        fi
                         
                         # Clean up temp file
                         cat test-results/junit.xml
@@ -201,6 +206,11 @@ pipeline {
                         
                         # Remove testsuite elements not containing @api or @db, but keep the root <testsuites> element
                         awk 'BEGIN {print "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>"} /<testsuites/{print; next} /<testsuite/{p=0} /@api|@db/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
+                        
+                        # Append </testsuites> if missing
+                        if ! grep -q '</testsuites>' test-results/junit.xml; then
+                            echo '</testsuites>' >> test-results/junit.xml
+                        fi
                         
                         # Clean up temp file
                         cat test-results/junit.xml
