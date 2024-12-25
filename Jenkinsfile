@@ -152,24 +152,6 @@ pipeline {
             }
             post {
                 always {
-                    // Remove test suites that don't contain @unit tests from junit.xml before publishing
-                    sh '''
-                        # Create temp file
-                        cat test-results/junit.xml
-                        cp test-results/junit.xml test-results/junit.tmp.xml
-                        
-                        # Remove testsuite elements not containing @unit, but keep the root <testsuites> element
-                        awk 'BEGIN {print "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>"} /<testsuites/{print; next} /<testsuite/{p=0} /@unit/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
-                        
-                        # Append </testsuites> if missing
-                        if ! grep -q '</testsuites>' test-results/junit.xml; then
-                            echo '</testsuites>' >> test-results/junit.xml
-                        fi
-                        
-                        # Clean up temp file
-                        cat test-results/junit.xml
-                        rm test-results/junit.tmp.xml
-                    '''
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
                 }
@@ -198,24 +180,6 @@ pipeline {
             }
             post {
                 always {
-                    // Remove test suites that don't contain @api or @db tests from junit.xml before publishing
-                    sh '''
-                        # Create temp file
-                        cat test-results/junit.xml
-                        cp test-results/junit.xml test-results/junit.tmp.xml
-                        
-                        # Remove testsuite elements not containing @api or @db, but keep the root <testsuites> element
-                        awk 'BEGIN {print "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>"} /<testsuites/{print; next} /<testsuite/{p=0} /@api|@db/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
-                        
-                        # Append </testsuites> if missing
-                        if ! grep -q '</testsuites>' test-results/junit.xml; then
-                            echo '</testsuites>' >> test-results/junit.xml
-                        fi
-                        
-                        # Clean up temp file
-                        cat test-results/junit.xml
-                        rm test-results/junit.tmp.xml
-                    '''
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
                 }
