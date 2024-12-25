@@ -20,20 +20,21 @@
  * Application Parameters:
  * - APP_API_PORT: Port number for the application API (default: 3001)
  *   - Production: Uses the specified port
- *   - Review: Uses port + 100 (e.g., if prod is 3000, review is 3100)
+ *   - Review: Uses a dynamic port based on build number
  *
  * Database Parameters:
  * - MARIADB_DATABASE: Name of the application database (default: planitlh)
- * - MARIADB_HOST: Database host (default: speedrun-db)
+ * - MARIADB_HOST: Database host (default: host.docker.internal)
  * - MARIADB_USER: Database user for application (default: lhuser)
  * - MARIADB_PORT: Port number for MariaDB (default: 3306)
  *   - Production: Uses the specified port
- *   - Review: Uses port + 100 (e.g., if prod is 3306, review is 3406)
+ *   - Review: Uses a dynamic port based on build number
  *
  * Environment Identifier:
  * ENVIRONMENT_ID is set automatically based on deployment type:
  * - 'review-${BUILD_NUMBER}' for feature branch deployments
  * - 'prod' for production deployments
+ * - 'test' for develop branch deployments
  *
  * Jenkins Security Management:
  * - Sensitive data (passwords, tokens) stored as Jenkins credentials
@@ -148,10 +149,12 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
+                // Run unit tests
                 sh 'yarn test -t @unit'
             }
             post {
                 always {
+                    // Publish test results and clean up
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
                 }
@@ -160,10 +163,12 @@ pipeline {
 
         stage('Deploy Review Environment') {
             environment {
+                // Set environment variables for review deployment
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
+                // Deploy the review environment
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
@@ -172,14 +177,17 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
+                // Set environment variables for integration testing
                 ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
+                // Run integration tests
                 sh 'yarn test -t "@api|@db"'
             }
             post {
                 always {
+                    // Publish test results and clean up
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
                 }
@@ -198,13 +206,13 @@ pipeline {
         // Stage 7: Review Environment Deployment
         stage('Deploy Test Environment') {
             when {
-                // Only deploy the test environment for feature the develop branch
+                // Only deploy the test environment for the develop branch
                 // This enables testing and review before merging to main
                 branch 'develop'
             }
             steps {
                 script {
-                    // Clean up any previous test environment
+                    // Clean up any previous test environment and deploy
                     sh '''
                         docker compose down --remove-orphans
                         docker compose up --wait -d
@@ -222,7 +230,7 @@ pipeline {
             }
             steps {
                 script {
-                    // Clean up existing deployment
+                    // Clean up existing deployment and deploy
                     sh 'docker compose down --remove-orphans'
                     sh 'docker compose up --wait -d'
                     
