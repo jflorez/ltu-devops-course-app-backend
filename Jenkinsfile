@@ -158,7 +158,7 @@ pipeline {
                         cp test-results/junit.xml test-results/junit.tmp.xml
                         
                         # Remove testsuite elements not containing @unit
-                        xmlstarlet ed -d "//testsuite[not(contains(@name,'@unit'))]" test-results/junit.tmp.xml > test-results/junit.xml
+                        awk '/<testsuite/{p=0} /@unit/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
                         
                         # Clean up temp file
                         rm test-results/junit.tmp.xml
@@ -197,7 +197,7 @@ pipeline {
                         cp test-results/junit.xml test-results/junit.tmp.xml
                         
                         # Remove testsuite elements not containing @api or @db
-                        xmlstarlet ed -d "//testsuite[not(contains(@name,'@api') or contains(@name,'@db'))]" test-results/junit.tmp.xml > test-results/junit.xml
+                        awk '/<testsuite/{p=0} /@api|@db/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
                         
                         # Clean up temp file
                         rm test-results/junit.tmp.xml
