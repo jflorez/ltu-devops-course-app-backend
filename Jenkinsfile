@@ -155,12 +155,14 @@ pipeline {
                     // Remove test suites that don't contain @unit tests from junit.xml before publishing
                     sh '''
                         # Create temp file
+                        cat test-results/junit.xml
                         cp test-results/junit.xml test-results/junit.tmp.xml
                         
                         # Remove testsuite elements not containing @unit
                         awk '/<testsuite/{p=0} /@unit/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
                         
                         # Clean up temp file
+                        cat test-results/junit.xml
                         rm test-results/junit.tmp.xml
                     '''
                     junit 'test-results/junit.xml'
@@ -194,12 +196,14 @@ pipeline {
                     // Remove test suites that don't contain @api or @db tests from junit.xml before publishing
                     sh '''
                         # Create temp file
+                        cat test-results/junit.xml
                         cp test-results/junit.xml test-results/junit.tmp.xml
                         
                         # Remove testsuite elements not containing @api or @db
                         awk '/<testsuite/{p=0} /@api|@db/{p=1} p' test-results/junit.tmp.xml > test-results/junit.xml
                         
                         # Clean up temp file
+                        cat test-results/junit.xml
                         rm test-results/junit.tmp.xml
                     '''
                     junit 'test-results/junit.xml'
