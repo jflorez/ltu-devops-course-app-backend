@@ -169,7 +169,6 @@ pipeline {
             }
             steps {
                 // Deploy the review environment
-                sh 'echo "ENVIRONMENT_ID: ${ENVIRONMENT_ID}"'
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
