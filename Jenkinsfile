@@ -74,8 +74,8 @@ pipeline {
 
     parameters {
         // Optional port overrides
-        string(name: 'APP_API_PORT', defaultValue: '', description: 'Optional: Override the default API port (main: 3001, develop: 3002, other branches: 4500-4999)')
-        string(name: 'MARIADB_PORT', defaultValue: '', description: 'Optional: Override the default MariaDB port (main: 3306, develop: 3307, other branches: 4000-4499)')
+        string(name: 'OVERRIDE_APP_API_PORT', defaultValue: '', description: 'Optional: Override the default API port (main: 3001, develop: 3002, other branches: 4500-4999)')
+        string(name: 'OVERRIDE_MARIADB_PORT', defaultValue: '', description: 'Optional: Override the default MariaDB port (main: 3306, develop: 3307, other branches: 4000-4499)')
         
         // Database parameters
         string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
@@ -91,12 +91,12 @@ pipeline {
         //   API ports range: 4500-4999
         //   DB ports range: 4000-4499
         // The ?: operator is Groovy's "Elvis operator" - returns left side if not null/empty, otherwise right side
-        APP_API_PORT = """${params.APP_API_PORT ?: (
+        APP_API_PORT = """${params.OVERRIDE_APP_API_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3001' : (
             env.BRANCH_NAME == 'develop' ? '3002' : 
             (4500 + (BUILD_NUMBER.toInteger() % 500))
         ))}"""
-        MARIADB_PORT = """${params.MARIADB_PORT ?: (
+        MARIADB_PORT = """${params.OVERRIDE_MARIADB_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3306' : (
             env.BRANCH_NAME == 'develop' ? '3307' : 
             (4000 + (BUILD_NUMBER.toInteger() % 500))
@@ -237,15 +237,11 @@ pipeline {
             steps {
                 script {
                     // Clean up any previous test environment and deploy
-                    sh '''
-                        echo "MARIADB_PORT: ${MARIADB_PORT}"
-                        echo "APP_API_PORT: ${APP_API_PORT}"
-                        docker compose down --remove-orphans
-                        docker compose up --wait -d
-                        echo "Test environment deployment complete"
-                        echo "API available on port: ${APP_API_PORT}"
-                        echo "Database available on port: ${MARIADB_PORT}"
-                    '''
+                    sh 'docker compose down --remove-orphans'
+                    sh 'docker compose up --wait -d'
+                    echo "Test environment deployment complete"
+                    echo "API available on port: ${APP_API_PORT}"
+                    echo "Database available on port: ${MARIADB_PORT}"
                 }
             }
         }
@@ -262,13 +258,6 @@ pipeline {
                     // Clean up existing deployment and deploy
                     sh 'docker compose down --remove-orphans'
                     sh 'docker compose up --wait -d'
-                    
-                    // Create a git tag for deployment traceability
-                    // This helps track what code is in production
-                    // sh """
-                    //     git tag -a "deploy-\$(date +%Y%m%d-%H%M%S)" -m "Production deployment"
-                    //     git push origin --tags
-                    // """
                     echo "Production deployment complete"
                     echo "API available on port: ${APP_API_PORT}"
                     echo "Database available on port: ${MARIADB_PORT}"
