@@ -128,7 +128,6 @@ pipeline {
                 // This ensures consistent package manager versions across builds
                 sh '''
                     corepack enable
-                    corepack prepare yarn@4.5.3 --activate
                     yarn install
                     yarn tsoa
                 '''
