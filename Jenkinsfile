@@ -89,7 +89,7 @@ pipeline {
         MARIADB_HOST = 'host.docker.internal'
         // Environment identifier
         // Will be overridden in Review and Production stages
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : env.BRANCH_NAME == 'develop' ? 'test' : 'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER}"
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'test'}"
         
         TESTCONTAINERS_RYUK_DISABLED = true  
     }
@@ -164,6 +164,7 @@ pipeline {
         stage('Deploy Review Environment') {
             environment {
                 // Set environment variables for review deployment
+                ENVIRONMENT_ID = "'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
@@ -176,6 +177,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
+                ENVIRONMENT_ID = "'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
