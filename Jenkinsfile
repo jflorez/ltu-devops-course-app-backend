@@ -101,9 +101,10 @@ pipeline {
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
         MARIADB_PASSWORD = credentials('mariadb-password')
         // Environment identifier, overridden in Review stages
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : (
+        ENVIRONMENT_ID = "${
+            env.BRANCH_NAME == 'main' ? 'prod' : (
             env.BRANCH_NAME == 'develop' ? 'test' : 
-            "review-${env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-')}-${env.BUILD_NUMBER}"
+            'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER
         )}"
     }
 
