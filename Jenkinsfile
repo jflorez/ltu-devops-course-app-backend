@@ -80,6 +80,7 @@ pipeline {
         string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
         string(name: 'MARIADB_USER', defaultValue: 'lhuser', description: 'Database user for application')
         string(name: 'MARIADB_PORT', defaultValue: '3306', description: 'Port number for MariaDB')
+        string(name: 'MARIADB_HOST', defaultValue: 'host.docker.internal', description: 'Host address for MariaDB')
     }
 
     environment {
@@ -87,12 +88,8 @@ pipeline {
         APP_API_TOKEN = credentials('app-api-token')
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
         MARIADB_PASSWORD = credentials('mariadb-password')
-        MARIADB_HOST = 'host.docker.internal'
-        // Environment identifier, overridden in Review and Production stages
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'test'}"
-        
-        // Disables Ryuk, a resource management tool, for test containers
-        TESTCONTAINERS_RYUK_DISABLED = true  
+        // Environment identifier, overridden in Review stages
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'test'}" 
     }
 
     triggers {
@@ -205,6 +202,7 @@ pipeline {
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
+                // In real world use the images will be stored in a registry and pulled from there during deployment
                 sh 'docker compose build'
             }
         }
