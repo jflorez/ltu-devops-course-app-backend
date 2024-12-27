@@ -193,6 +193,13 @@ pipeline {
 
         // Stage 6: Container Image Building
         stage('Build') {
+            when {
+                // Only build Docker images for develop and main branches
+                anyOf {
+                    branch 'develop'
+                    branch 'main'
+                }
+            }
             steps {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
