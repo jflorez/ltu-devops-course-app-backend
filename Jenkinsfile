@@ -150,7 +150,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 // Run unit tests
-                sh 'yarn test "tests/unit/**/*spec*.ts"'
+                sh 'yarn test "tests/unit/**/*.spec.ts"'
             }
             post {
                 always {
@@ -183,7 +183,7 @@ pipeline {
             }
             steps {
                 // Run integration tests
-                sh 'yarn test "tests/api/**/*spec*.ts" "tests/db/**/*spec*.ts"'
+                sh 'yarn test "tests/api/**/*spec.ts" "tests/db/**/*spec.ts"'
             }
             post {
                 always {
