@@ -150,7 +150,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 // Run unit tests
-                sh 'yarn test "tests/unit/**/*.spec.ts"'
+                sh 'yarn test tests/unit'
             }
             post {
                 always {
@@ -183,7 +183,7 @@ pipeline {
             }
             steps {
                 // Run integration tests
-                sh 'yarn test "tests/api/**/*spec.ts" "tests/db/**/*spec.ts"'
+                sh 'yarn test tests/api tests/db'
             }
             post {
                 always {
@@ -210,12 +210,20 @@ pipeline {
                 // This enables testing and review before merging to main
                 branch 'develop'
             }
+            environment {
+                // Set environment variables for integration testing
+                ENVIRONMENT_ID = "test"
+                MARIADB_PORT = "${8000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
+            }
             steps {
                 script {
                     // Clean up any previous test environment and deploy
                     sh '''
                         docker compose down --remove-orphans
                         docker compose up --wait -d
+                        echo "Production deployment complete"
+                        echo "API available on port: ${params.APP_API_PORT}"
+                        echo "Database available on port: ${params.MARIADB_PORT}"
                     '''
                 }
             }
