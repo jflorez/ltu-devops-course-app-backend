@@ -88,12 +88,12 @@ pipeline {
         APP_API_PORT = "${params.APP_API_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3001' : (
             env.BRANCH_NAME == 'develop' ? '3002' : 
-            "${4500 + (BUILD_NUMBER.toInteger() % 500)}"
+            (4500 + (BUILD_NUMBER.toInteger() % 500))
         ))}"
         MARIADB_PORT = "${params.MARIADB_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3306' : (
             env.BRANCH_NAME == 'develop' ? '3307' : 
-            "${4000 + (BUILD_NUMBER.toInteger() % 500)}"
+            (4000 + (BUILD_NUMBER.toInteger() % 500))
         ))}"
         
         // Sensitive data stored as credentials for security
