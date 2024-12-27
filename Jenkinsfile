@@ -84,7 +84,13 @@ pipeline {
     }
 
     environment {
-        // Port configuration with parameter overrides
+        // Dynamic Port Assignment:
+        // - For main branch: Uses fixed production ports (3001 for API, 3306 for DB)
+        // - For develop branch: Uses fixed test ports (3002 for API, 3307 for DB)
+        // - For feature branches: Calculates unique ports based on build number to avoid conflicts
+        //   API ports range: 4500-4999
+        //   DB ports range: 4000-4499
+        // The ?: operator is Groovy's "Elvis operator" - returns left side if not null/empty, otherwise right side
         APP_API_PORT = "${params.APP_API_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3001' : (
             env.BRANCH_NAME == 'develop' ? '3002' : 
@@ -96,13 +102,20 @@ pipeline {
             (4000 + (BUILD_NUMBER.toInteger() % 500))
         ))}"
         
-        // Sensitive data stored as credentials for security
+        // Secure Credential Management:
+        // Jenkins credentials store sensitive data like passwords and tokens
+        // These are automatically masked in logs for security
         APP_API_TOKEN = credentials('app-api-token')
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
         MARIADB_PASSWORD = credentials('mariadb-password')
-        // Environment identifier, overridden in Review stages
-        ENVIRONMENT_ID = "${
-            env.BRANCH_NAME == 'main' ? 'prod' : (
+
+        // Environment Identification:
+        // Creates a unique identifier for each deployment environment
+        // - 'prod' for production (main branch)
+        // - 'test' for testing (develop branch)
+        // - 'review-{branch-name}-{build-number}' for feature branches
+        // The replaceAll regex removes any non-alphanumeric characters for clean environment names
+        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : (
             env.BRANCH_NAME == 'develop' ? 'test' : 
             'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER
         )}"
