@@ -177,7 +177,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
-                ENVIRONMENT_ID = "'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER}"
+                ENVIRONMENT_ID = "review-${env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-')}-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
