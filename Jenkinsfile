@@ -223,6 +223,8 @@ pipeline {
                 script {
                     // Clean up any previous test environment and deploy
                     sh '''
+                        echo "MARIADB_PORT: ${MARIADB_PORT}"
+                        echo "APP_API_PORT: ${APP_API_PORT}"
                         docker compose down --remove-orphans
                         docker compose up --wait -d
                         echo "Test environment deployment complete"
