@@ -177,8 +177,6 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
-                // Set environment variables for integration testing
-                ENVIRONMENT_ID = "review-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
@@ -211,8 +209,6 @@ pipeline {
                 branch 'develop'
             }
             environment {
-                // Set environment variables for integration testing
-                ENVIRONMENT_ID = "test"
                 MARIADB_PORT = "8306"
                 APP_API_PORT = "8301"
             }
