@@ -1,74 +1,75 @@
 /**
  * Jenkins Pipeline Configuration for Speedrun Tracker Application
  * 
- * This Jenkinsfile implements a trunk-based development workflow where:
- * - 'main' branch is the trunk (source of truth)
- * - Feature branches are short-lived (usually less than 2 days)
- * - Feature branches are prefixed with 'feature/'
- * - All changes are integrated frequently into the trunk
- * - Only trunk (main) gets deployed to production
+ * This Jenkinsfile implements a simplified Gitflow workflow, which is a structured branching model for managing software development:
+ * - The 'main' branch is the stable branch where production-ready code resides.
+ * - The 'develop' branch is used for integrating features and is the base for feature branches.
+ * - Feature branches are created from 'develop' and are used to develop new features or fixes.
+ * - Once a feature is complete, it is merged back into 'develop' for integration and testing.
+ * - Only the 'main' branch is deployed to production, ensuring that only tested and stable code is released.
+ *
+ * Note: This example demonstrates a simple deployment approach to a local Docker engine. In real-world scenarios, deployments are often made to cloud environments such as AWS, Azure, or Google Cloud Platform, which provide scalability and additional services.
  *
  * Required Jenkins Credentials:
- * Sensitive data is stored as Jenkins credentials:
- * - app-api-token: Security token for API authentication
- * - mariadb-root-password: Root password for MariaDB
- * - mariadb-password: Database user's password
+ * Sensitive data is stored securely as Jenkins credentials to protect it from unauthorized access:
+ * - app-api-token: A security token used for authenticating API requests.
+ * - mariadb-root-password: The root password for the MariaDB database.
+ * - mariadb-password: The password for the database user.
  *
  * Pipeline Parameters:
- * Configurable values that can be set per build:
+ * These are configurable values that can be set for each build, allowing flexibility and customization:
  * 
  * Application Parameters:
- * - APP_API_PORT: Port number for the application API (default: 3001)
- *   - Production: Uses the specified port
- *   - Review: Uses a dynamic port based on build number
+ * - APP_API_PORT: The port number on which the application API runs (default: 3001).
+ *   - In production, the specified port is used.
+ *   - In review environments, a dynamic port is assigned based on the build number to avoid conflicts.
  *
  * Database Parameters:
- * - MARIADB_DATABASE: Name of the application database (default: planitlh)
- * - MARIADB_HOST: Database host (default: host.docker.internal)
- * - MARIADB_USER: Database user for application (default: lhuser)
- * - MARIADB_PORT: Port number for MariaDB (default: 3306)
- *   - Production: Uses the specified port
- *   - Review: Uses a dynamic port based on build number
+ * - MARIADB_DATABASE: The name of the application database (default: planitlh).
+ * - MARIADB_HOST: The host address for the database (default: host.docker.internal).
+ * - MARIADB_USER: The database user for the application (default: lhuser).
+ * - MARIADB_PORT: The port number for MariaDB (default: 3306).
+ *   - In production, the specified port is used.
+ *   - In test and review environments, a dynamic port is assigned based on the build number to avoid conflicts.
  *
  * Environment Identifier:
- * ENVIRONMENT_ID is set automatically based on deployment type:
- * - 'review-${BUILD_NUMBER}' for feature branch deployments
- * - 'prod' for production deployments
- * - 'test' for develop branch deployments
+ * The ENVIRONMENT_ID is automatically set based on the deployment type:
+ * - 'review-${BUILD_NUMBER}' for feature branch deployments, providing a unique identifier for each build.
+ * - 'prod' for production deployments, indicating the live environment.
+ * - 'test' for develop branch deployments, used for testing purposes.
  *
  * Jenkins Security Management:
- * - Sensitive data (passwords, tokens) stored as Jenkins credentials
- * - Non-sensitive data configurable via pipeline parameters
- * - Credentials are automatically masked in logs
- * - Parameters can be modified per build
- * - Some values are overridden for specific deployment types
+ * - Sensitive data such as passwords and tokens are stored as Jenkins credentials to ensure security.
+ * - Non-sensitive data is configurable via pipeline parameters, allowing flexibility.
+ * - Credentials are automatically masked in logs to prevent exposure.
+ * - Parameters can be modified per build to suit different requirements.
+ * - Some values are overridden for specific deployment types to ensure correct configuration.
  *
  * DevOps Learning Points:
  * 1. Continuous Integration (CI):
- *    - Automated testing on every code change
- *    - Code quality checks (linting and formatting)
- *    - Regular integration into the main branch
- *    - Containerized test environments for consistency
+ *    - Automated testing is performed on every code change to catch issues early.
+ *    - Code quality checks, such as linting and formatting, ensure consistency and maintainability.
+ *    - Regular integration into the develop branch reduces integration challenges.
+ *    - Containerized test environments provide consistency across different setups.
  * 
  * 2. Continuous Deployment (CD):
- *    - Automated deployments to different environments
- *    - Feature branch deployments for review
- *    - Production deployments from main branch
- *    - Environment-specific configurations
+ *    - Automated deployments to different environments streamline the release process.
+ *    - Feature branch deployments allow for review and feedback before merging.
+ *    - Production deployments are only done from the main branch to ensure stability.
+ *    - Environment-specific configurations ensure that each environment is set up correctly.
  * 
  * 3. Best Practices:
- *    - Environment separation (review vs prod)
- *    - Port isolation between environments
- *    - Automated cleanup of resources
- *    - Version tagging for traceability
- *    - Secure credential management
- *    - Parameterized builds for flexibility
- *    - Consistent test environments using containers
+ *    - Environment separation (review test vs prod) ensures that testing does not affect the live environment.
+ *    - Port isolation between environments prevents conflicts and ensures smooth operation.
+ *    - Automated cleanup of resources helps manage system resources efficiently.
+ *    - Version tagging provides traceability, allowing you to track what code is in production.
+ *    - Secure credential management protects sensitive information.
+ *    - Parameterized builds offer flexibility to adapt to different scenarios.
+ *    - Consistent test environments using containers ensure that tests run the same way every time.
  */
 
 pipeline {
-    // Use the same Jenkins agent for all stages
-    // This ensures consistent environment and workspace across the pipeline
+    // Use the same Jenkins agent for all stages to ensure a consistent environment and workspace
     agent any
 
     parameters {
@@ -82,29 +83,28 @@ pipeline {
     }
 
     environment {
-        // Sensitive data stored as credentials
+        // Sensitive data stored as credentials for security
         APP_API_TOKEN = credentials('app-api-token')
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
         MARIADB_PASSWORD = credentials('mariadb-password')
         MARIADB_HOST = 'host.docker.internal'
-        // Environment identifier
-        // Will be overridden in Review and Production stages
+        // Environment identifier, overridden in Review and Production stages
         ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : 'test'}"
         
+        // Disables Ryuk, a resource management tool, for test containers
         TESTCONTAINERS_RYUK_DISABLED = true  
     }
 
     triggers {
-        // Continuous Integration: Regular polling of source code
+        // Continuous Integration: Regular polling of source code every 5 minutes
         // 'H' allows Jenkins to distribute load by picking a random minute within the 5-minute window
         pollSCM('H/5 * * * *')
     }
 
     options {
-        // Build retention strategy:
+        // Build retention strategy to manage disk space while maintaining useful history
         // - Main branch: Keep 10 builds (production history)
         // - Feature branches: Keep 3 builds for 2 days (temporary work)
-        // This helps manage disk space while maintaining useful history
         buildDiscarder(logRotator(
             numToKeepStr: BRANCH_NAME == 'main' ? '10' : '3',
             daysToKeepStr: BRANCH_NAME == 'main' ? '' : '2'
@@ -149,12 +149,12 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                // Run unit tests
+                // Run unit tests to verify individual components of the application
                 sh 'yarn test tests/unit'
             }
             post {
                 always {
-                    // Publish test results and clean up
+                    // Publish test results and clean up test artifacts
                     junit 'test-results/junit.xml'
                     sh 'rm -rf test-results'
                 }
@@ -168,7 +168,7 @@ pipeline {
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
-                // Deploy the review environment
+                // Deploy the review environment for testing and feedback
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
@@ -177,16 +177,17 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
+                // Reuse the review environment settings for integration tests
                 ENVIRONMENT_ID = "review-${env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-')}-${env.BUILD_NUMBER}"
                 MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
-                // Run integration tests
+                // Run integration tests to verify interactions between components
                 sh 'yarn test tests/api tests/db'
             }
             post {
                 always {
-                    // Publish test results and clean up
+                    // Publish test results and clean up the database
                     junit 'test-results/junit.xml'
                     sh 'yarn db:down -v || true'
                 }
@@ -209,16 +210,17 @@ pipeline {
             }
         }
 
-        // Stage 7: Review Environment Deployment
-        stage('Deploy Test Environment') {
+        // Stage 7: Test Environment Deployment
+        stage('Deploy Test') {
             when {
                 // Only deploy the test environment for the develop branch
                 // This enables testing and review before merging to main
                 branch 'develop'
             }
             environment {
-                MARIADB_PORT = "${8000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
-                APP_API_PORT = "${9000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
+                // Assign dynamic ports to avoid conflicts
+                MARIADB_PORT = "${8000 + (BUILD_NUMBER.toInteger() % 1000)}"
+                APP_API_PORT = "${9000 + (BUILD_NUMBER.toInteger() % 1000)}"
             }
             steps {
                 script {
@@ -226,7 +228,7 @@ pipeline {
                     sh '''
                         docker compose down --remove-orphans
                         docker compose up --wait -d
-                        echo "Production deployment complete"
+                        echo "Test environment deployment complete"
                         echo "API available on port: ${APP_API_PORT}"
                         echo "Database available on port: ${MARIADB_PORT}"
                     '''
@@ -263,7 +265,7 @@ pipeline {
 
     // Post-build actions
     post {
-        // Always perform these actions
+        // Always perform these actions to clean up after the build
         always {
             // Clean up test artifacts to save disk space
             cleanWs(patterns: [[pattern: 'test-results/**', type: 'INCLUDE']])
