@@ -213,7 +213,8 @@ pipeline {
             environment {
                 // Set environment variables for integration testing
                 ENVIRONMENT_ID = "test"
-                MARIADB_PORT = "${8000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
+                MARIADB_PORT = "8306"
+                APP_API_PORT = "8301"
             }
             steps {
                 script {
@@ -222,8 +223,8 @@ pipeline {
                         docker compose down --remove-orphans
                         docker compose up --wait -d
                         echo "Production deployment complete"
-                        echo "API available on port: ${params.APP_API_PORT}"
-                        echo "Database available on port: ${params.MARIADB_PORT}"
+                        echo "API available on port: ${APP_API_PORT}"
+                        echo "Database available on port: ${MARIADB_PORT}"
                     '''
                 }
             }
@@ -249,8 +250,8 @@ pipeline {
                     //     git push origin --tags
                     // """
                     echo "Production deployment complete"
-                    echo "API available on port: ${params.APP_API_PORT}"
-                    echo "Database available on port: ${params.MARIADB_PORT}"
+                    echo "API available on port: ${APP_API_PORT}"
+                    echo "Database available on port: ${MARIADB_PORT}"
                 }
             }
         }
