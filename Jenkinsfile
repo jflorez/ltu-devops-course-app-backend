@@ -73,17 +73,31 @@ pipeline {
     agent any
 
     parameters {
-        // Application parameters
-        string(name: 'APP_API_PORT', defaultValue: '3001', description: 'Port number for the application API')
+        // Optional port overrides
+        string(name: 'APP_API_PORT', defaultValue: '', description: 'Optional: Override the default API port (main: 3001, develop: 3002, other branches: 4500-4999)')
+        string(name: 'MARIADB_PORT', defaultValue: '', description: 'Optional: Override the default MariaDB port (main: 3306, develop: 3307, other branches: 4000-4499)')
         
         // Database parameters
         string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
         string(name: 'MARIADB_USER', defaultValue: 'lhuser', description: 'Database user for application')
-        string(name: 'MARIADB_PORT', defaultValue: '3306', description: 'Port number for MariaDB')
         string(name: 'MARIADB_HOST', defaultValue: 'host.docker.internal', description: 'Host address for MariaDB')
     }
 
     environment {
+        // Port configuration with parameter overrides
+        APP_API_PORT = "${params.APP_API_PORT ?: (
+            env.BRANCH_NAME == 'main' ? '3001' : (
+                env.BRANCH_NAME == 'develop' ? '3002' : 
+                "${4500 + (BUILD_NUMBER.toInteger() % 500)}"
+            )
+        )}"
+        MARIADB_PORT = "${params.MARIADB_PORT ?: (
+            env.BRANCH_NAME == 'main' ? '3306' : (
+                env.BRANCH_NAME == 'develop' ? '3307' : 
+                "${4000 + (BUILD_NUMBER.toInteger() % 500)}"
+            )
+        )}"
+        
         // Sensitive data stored as credentials for security
         APP_API_TOKEN = credentials('app-api-token')
         MARIADB_ROOT_PASSWORD = credentials('mariadb-root-password')
@@ -161,7 +175,6 @@ pipeline {
             environment {
                 // Set environment variables for review deployment
                 ENVIRONMENT_ID = "review-${env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-')}-${env.BUILD_NUMBER}"
-                MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
                 // Deploy the review environment for testing and feedback
@@ -175,7 +188,6 @@ pipeline {
             environment {
                 // Reuse the review environment settings for integration tests
                 ENVIRONMENT_ID = "review-${env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-')}-${env.BUILD_NUMBER}"
-                MARIADB_PORT = "${4000 + (BUILD_NUMBER.toInteger() % 1000)}" // Prevent port number from getting too large
             }
             steps {
                 // Run integration tests to verify interactions between components
@@ -213,11 +225,6 @@ pipeline {
                 // Only deploy the test environment for the develop branch
                 // This enables testing and review before merging to main
                 branch 'develop'
-            }
-            environment {
-                // Assign dynamic ports to avoid conflicts
-                MARIADB_PORT = "${MARIADB_PORT + 1000}"
-                APP_API_PORT = "${APP_API_PORT + 1000}"
             }
             steps {
                 script {
