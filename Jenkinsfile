@@ -216,8 +216,8 @@ pipeline {
             }
             environment {
                 // Assign dynamic ports to avoid conflicts
-                MARIADB_PORT = "${8000 + (BUILD_NUMBER.toInteger() % 1000)}"
-                APP_API_PORT = "${9000 + (BUILD_NUMBER.toInteger() % 1000)}"
+                MARIADB_PORT = "${MARIADB_PORT + 1000}"
+                APP_API_PORT = "${APP_API_PORT + 1000}"
             }
             steps {
                 script {
