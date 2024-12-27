@@ -91,16 +91,16 @@ pipeline {
         //   API ports range: 4500-4999
         //   DB ports range: 4000-4499
         // The ?: operator is Groovy's "Elvis operator" - returns left side if not null/empty, otherwise right side
-        APP_API_PORT = "${params.APP_API_PORT ?: (
+        APP_API_PORT = """${params.APP_API_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3001' : (
             env.BRANCH_NAME == 'develop' ? '3002' : 
             (4500 + (BUILD_NUMBER.toInteger() % 500))
-        ))}"
-        MARIADB_PORT = "${params.MARIADB_PORT ?: (
+        ))}"""
+        MARIADB_PORT = """${params.MARIADB_PORT ?: (
             env.BRANCH_NAME == 'main' ? '3306' : (
             env.BRANCH_NAME == 'develop' ? '3307' : 
             (4000 + (BUILD_NUMBER.toInteger() % 500))
-        ))}"
+        ))}"""
         
         // Secure Credential Management:
         // Jenkins credentials store sensitive data like passwords and tokens
@@ -115,10 +115,11 @@ pipeline {
         // - 'test' for testing (develop branch)
         // - 'review-{branch-name}-{build-number}' for feature branches
         // The replaceAll regex removes any non-alphanumeric characters for clean environment names
-        ENVIRONMENT_ID = "${env.BRANCH_NAME == 'main' ? 'prod' : (
+        ENVIRONMENT_ID = """${
+            env.BRANCH_NAME == 'main' ? 'prod' : (
             env.BRANCH_NAME == 'develop' ? 'test' : 
             'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER
-        )}"
+        )}"""
     }
 
     triggers {
