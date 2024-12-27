@@ -151,13 +151,10 @@ pipeline {
         // Stage 2: Development Environment Setup
         stage('Setup') {
             steps {
-                // Setup Node.js package management using corepack
-                // This ensures consistent package manager versions across builds
-                sh '''
-                    corepack enable
-                    yarn install
-                    yarn tsoa
-                '''
+                // Each command is separate for better error tracking
+                sh 'corepack enable'
+                sh 'yarn install'
+                sh 'yarn tsoa'
             }
         }
 
@@ -166,10 +163,8 @@ pipeline {
             steps {
                 // Static code analysis and style checking
                 // These checks ensure code consistency and catch potential issues early
-                sh '''
-                    yarn lint
-                    yarn format:check
-                '''
+                sh 'yarn lint'
+                sh 'yarn format:check'
             }
         }
 
