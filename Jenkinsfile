@@ -133,8 +133,8 @@ pipeline {
         // - Main branch: Keep 10 builds (production history)
         // - Feature branches: Keep 3 builds for 2 days (temporary work)
         buildDiscarder(logRotator(
-            numToKeepStr: BRANCH_NAME == 'main' ? '10' : '3',
-            daysToKeepStr: BRANCH_NAME == 'main' ? '' : '2'
+            numToKeepStr: BRANCH_NAME == 'main' || BRANCH_NAME == 'develop' ? '10' : '3',
+            daysToKeepStr: BRANCH_NAME == 'main' || BRANCH_NAME == 'develop' ? '' : '2'
         ))
     }
 
