@@ -84,6 +84,45 @@ The application uses Jenkins for continuous integration and deployment, implemen
 - `develop`: Integration branch for features, used as the base for feature branches
 - `feature/*`: Feature development branches, created from develop for new features or fixes
 
+#### Branching Strategy Diagram
+
+```mermaid
+gitGraph
+    commit id: "init" tag: "v1.0"
+    branch develop
+    checkout develop
+    commit id: "start new development"
+    
+    branch feature/1
+    checkout feature/1
+    commit id: "work on feature 1"
+    commit id: "complete feature 1"
+    checkout develop
+    merge feature/1
+    
+    branch feature/2
+    checkout feature/2
+    commit id: "work on feature 2"
+    commit id: "complete feature 2"
+    checkout develop
+    merge feature/2
+    
+    checkout main
+    merge develop tag: "v1.1"
+    
+    checkout develop
+    commit id: "continue development"
+```
+
+This diagram illustrates:
+1. The main branch containing production-ready code. The production environment is created from this branch.
+2. A develop branch where features are integrated. The test environment is created from this branch.
+3. Feature branches (`feature/*`) created from develop
+4. Features being merged back into develop
+5. Stable releases being merged into main with a tag
+
+The workflow shows how code flows from feature branches → develop → main, ensuring only stable and tested code reaches production.
+
 ### Environment Configuration
 
 #### Ports
@@ -226,3 +265,6 @@ The pipeline implements dynamic port assignment to prevent conflicts:
 - Test environment uses dedicated ports
 - Feature branches get automatically assigned ports from a predefined range
 - Port overrides available through pipeline parameters when needed
+
+
+
