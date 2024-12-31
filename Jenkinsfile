@@ -197,7 +197,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
-                
+                // Override the MariaDB host to use localhost for integration tests. These tests use the review environment which is always running on localhost
                 MARIADB_HOST = "localhost"
             }
             steps {
