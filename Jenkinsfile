@@ -187,9 +187,11 @@ pipeline {
         }
 
         stage('Deploy Review Environment') {
+            environment {
+                ENVIRONMENT_ID = "review-${BRANCH_NAME}-${BUILD_NUMBER}"
+            }
             steps {
                 // Deploy the review environment for testing and feedback
-                
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
@@ -198,6 +200,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
+                ENVIRONMENT_ID = "review-${BRANCH_NAME}-${BUILD_NUMBER}"
                 MARIADB_HOST = "host.docker.internal"
             }
             steps {
