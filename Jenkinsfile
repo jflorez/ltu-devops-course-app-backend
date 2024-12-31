@@ -191,6 +191,7 @@ pipeline {
         stage('Deploy Review Environment') {
             steps {
                 // Deploy the review environment for testing and feedback
+                sh 'echo $MARIADB_HOST'
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
@@ -199,6 +200,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             steps {
+                sh 'echo $MARIADB_HOST'
                 // Run integration tests to verify interactions between components
                 sh 'yarn test tests/api tests/db'
             }
