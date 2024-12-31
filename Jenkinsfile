@@ -76,11 +76,11 @@ pipeline {
         // Optional port overrides
         string(name: 'OVERRIDE_APP_API_PORT', defaultValue: '', description: 'Optional: Override the default API port (main: 3001, develop: 3002, other branches: 4500-4999)')
         string(name: 'OVERRIDE_MARIADB_PORT', defaultValue: '', description: 'Optional: Override the default MariaDB port (main: 3306, develop: 3307, other branches: 4000-4499)')
+        string(name: 'OVERRIDE_MARIADB_HOST', defaultValue: '', description: 'Optional: Override the default MariaDB host (default: host.docker.internal)')
         
         // Database parameters
         string(name: 'MARIADB_DATABASE', defaultValue: 'planitlh', description: 'Name of the application database')
         string(name: 'MARIADB_USER', defaultValue: 'lhuser', description: 'Database user for application')
-        string(name: 'MARIADB_HOST', defaultValue: 'host.docker.internal', description: 'Host address for MariaDB')
     }
 
     environment {
@@ -101,6 +101,9 @@ pipeline {
             env.BRANCH_NAME == 'develop' ? '3307' : 
             (4000 + (BUILD_NUMBER.toInteger() % 500))
         ))}"""
+        MARIADB_HOST = """${(env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'develop') ? 
+            (params.OVERRIDE_MARIADB_HOST ?: 'host.docker.internal') : 
+            'host.docker.internal'}"""
         
         // Secure Credential Management:
         // Jenkins credentials store sensitive data like passwords and tokens
@@ -120,6 +123,9 @@ pipeline {
             env.BRANCH_NAME == 'develop' ? 'test' : 
             'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER
         )}"""
+
+        
+        
     }
 
     triggers {
