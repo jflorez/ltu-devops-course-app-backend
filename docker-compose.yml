@@ -10,8 +10,8 @@ services:
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
       - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_PORT=3306
-      - MARIADB_HOST=speedrun-db
+      - MARIADB_PORT=${MARIADB_PORT:-3306}
+      - MARIADB_HOST=${MARIADB_HOST:-speedrun-db}
       - APP_API_TOKEN=${APP_API_TOKEN}
       - APP_API_PORT=${APP_API_PORT}
       - WORKSPACE=${WORKSPACE:-.}
@@ -49,9 +49,9 @@ services:
       - speedrun-network
     volumes:
       - mariadb-data:/var/lib/mysql
-    # ports:
-    #   - ${MARIADB_PORT}:3306
-
+    ports:
+      - ${MARIADB_PORT}:3306
+      
 volumes:
   mariadb-data:
     name: mariadb-data-$ENVIRONMENT_ID
