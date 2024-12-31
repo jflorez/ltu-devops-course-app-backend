@@ -117,10 +117,8 @@ pipeline {
         // - 'review-{branch-name}-{build-number}' for feature branches
         // The replaceAll regex removes any non-alphanumeric characters for clean environment names
         ENVIRONMENT_ID = """${
-            env.BRANCH_NAME == 'main' ? 'prod' : (
-            env.BRANCH_NAME == 'develop' ? 'test' : 
-            'review-' + env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9]/, '-') + '-' + env.BUILD_NUMBER
-        )}"""
+            env.BRANCH_NAME == 'main' ? 'prod' : 'test' 
+        }"""
 
         
         
