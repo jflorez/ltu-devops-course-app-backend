@@ -51,7 +51,7 @@ services:
       - mariadb-data:/var/lib/mysql
     ports:
       - ${MARIADB_PORT}:3306
-      
+
 volumes:
   mariadb-data:
     name: mariadb-data-$ENVIRONMENT_ID
