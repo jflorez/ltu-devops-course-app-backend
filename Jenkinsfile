@@ -227,7 +227,7 @@ pipeline {
                 // Build Docker images using docker-compose
                 // This creates consistent, reproducible environments
                 // In real world use the images will be stored in a registry and pulled from there during deployment
-                sh 'docker compose build --no-cache'
+                sh 'docker compose build'
             }
         }
 
