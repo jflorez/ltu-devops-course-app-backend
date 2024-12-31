@@ -101,9 +101,7 @@ pipeline {
             env.BRANCH_NAME == 'develop' ? '3307' : 
             (4000 + (BUILD_NUMBER.toInteger() % 500))
         ))}"""
-        MARIADB_HOST = """${params.OVERRIDE_MARIADB_HOST ?: (
-            env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'develop' ? 'localhost' : 'host.docker.internal'
-        )}"""
+        MARIADB_HOST = """${params.OVERRIDE_MARIADB_HOST ?: 'localhost'}"""
         
         // Secure Credential Management:
         // Jenkins credentials store sensitive data like passwords and tokens
@@ -191,7 +189,7 @@ pipeline {
         stage('Deploy Review Environment') {
             steps {
                 // Deploy the review environment for testing and feedback
-                sh 'echo $MARIADB_HOST'
+                
                 sh 'yarn db:down -v || true'
                 sh 'yarn db:up'
             }
@@ -199,8 +197,10 @@ pipeline {
 
         // Stage 5: Integration Testing
         stage('Integration Tests') {
+            environment {
+                MARIADB_HOST = "host.docker.internal"
+            }
             steps {
-                sh 'echo $MARIADB_HOST'
                 // Run integration tests to verify interactions between components
                 sh 'yarn test tests/api tests/db'
             }
