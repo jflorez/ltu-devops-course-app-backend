@@ -283,37 +283,36 @@ This project serves as an educational example of DevOps practices. In real-world
 ### Infrastructure Considerations
 
 - **Cloud Infrastructure**: While this example uses Docker Compose on a single host, real-world deployments typically involve:
-  - Multiple cloud providers (AWS, Azure, GCP)
-  - Kubernetes clusters for container orchestration
-  - Load balancers and auto-scaling groups
-  - Content Delivery Networks (CDN)
-  - Database clusters and caching layers
+    - Multiple cloud providers (AWS, Azure, GCP)
+    - Kubernetes clusters for container orchestration
+    - Load balancers and auto-scaling groups
+    - Content Delivery Networks (CDN)
+    - Database clusters and caching layers
 
 ### Additional Complexities
 
 - **Monitoring and Observability**:
-  - Application Performance Monitoring (APM)
-  - Distributed tracing
-  - Log aggregation
-  - Real-time alerting
+    - Application Performance Monitoring (APM)
+    - Distributed tracing
+    - Log aggregation
+    - Real-time alerting
 - **Security Measures**:
-  - Web Application Firewalls (WAF)
-  - DDoS protection
-  - Security scanning and compliance checks
+    - Web Application Firewalls (WAF)
+    - DDoS protection
+    - Security scanning and compliance checks
 - **Backup and Disaster Recovery**:
-  - Multi-region failover
-  - Data backup strategies
-  - Recovery point objectives (RPO)
-  - Recovery time objectives (RTO)
+    - Multi-region failover
+    - Data backup strategies
+    - Recovery point objectives (RPO)
+    - Recovery time objectives (RTO)
 
 ### Cost Management
 
 - **Resource Optimization**:
-  - Auto-scaling policies
-  - Development environment scheduling
-  - Resource cleanup automation
+    - Auto-scaling policies
+    - Development environment scheduling
+    - Resource cleanup automation
 - **Cost Monitoring**:
-  - Budget alerts
-  - Usage tracking
-  - Cost allocation tags
-
+    - Budget alerts
+    - Usage tracking
+    - Cost allocation tags
