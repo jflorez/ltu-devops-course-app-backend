@@ -70,7 +70,7 @@
 
 pipeline {
     // Use the same Jenkins agent for all stages to ensure a consistent environment and workspace
-    agent any
+    agent { label 'node' }
 
     parameters {
         // Optional port overrides
