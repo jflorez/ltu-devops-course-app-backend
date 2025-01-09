@@ -70,7 +70,11 @@
 
 pipeline {
     // Use the same Jenkins agent for all stages to ensure a consistent environment and workspace
-    agent { docker: 'jenkins-agent-node22:latest' }
+    agent {
+        docker {
+            image 'jenkins-agent-node22:latest'
+        }
+    }
 
     parameters {
         // Optional port overrides
