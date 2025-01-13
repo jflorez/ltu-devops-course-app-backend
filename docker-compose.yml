@@ -11,7 +11,7 @@ services:
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
       - MARIADB_DATABASE=${MARIADB_DATABASE}
       - MARIADB_PORT=${MARIADB_PORT:-3306}
-      - MARIADB_HOST=${MARIADB_HOST:-speedrun-db}
+      - MARIADB_HOST=speedrun-db
       - APP_API_TOKEN=${APP_API_TOKEN}
       - APP_API_PORT=${APP_API_PORT}
       - WORKSPACE=${WORKSPACE:-.}
@@ -33,7 +33,7 @@ services:
       context: ./db
       dockerfile: Dockerfile
     # image: mariadb
-    command: ['--max_connections=100']
+    command: ['--max_connections=100', '--port=${MARIADB_PORT:-3306}']
     healthcheck:
       interval: 5s
       retries: 3
@@ -45,12 +45,13 @@ services:
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
       - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_PORT=${MARIADB_PORT:-3306}
     networks:
       - speedrun-network
     volumes:
       - mariadb-data:/var/lib/mysql
     ports:
-      - ${MARIADB_PORT}:3306
+      - ${MARIADB_PORT:-3306}:${MARIADB_PORT:-3306}
 
 volumes:
   mariadb-data:

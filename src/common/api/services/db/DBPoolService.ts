@@ -12,6 +12,11 @@ export class DBPoolService {
     }
 
     get pool(): Pool {
+        console.log('MARIADB_HOST:', process.env.MARIADB_HOST);
+        console.log('MARIADB_USER:', process.env.MARIADB_USER);
+        console.log('MARIADB_PASSWORD:', process.env.MARIADB_PASSWORD);
+        console.log('MARIADB_DATABASE:', process.env.MARIADB_DATABASE);
+        console.log('MARIADB_PORT:', process.env.MARIADB_PORT);
         if (this._pool === undefined) {
             this._pool = mariadb.createPool({
                 host: process.env.MARIADB_HOST,
