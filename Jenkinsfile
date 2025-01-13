@@ -184,7 +184,7 @@ pipeline {
                 always {
                     // Publish test results and clean up test artifacts
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-*.xml'
                     sh 'rm -rf test-results'
                     sh 'rm -rf coverage'
                 }
