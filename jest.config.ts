@@ -5,6 +5,15 @@
 
 import type { Config } from 'jest';
 
+// Function to extract folder name from command-line arguments
+function getFolderNameFromArgs(): string {
+    const args = process.argv.slice(2);
+    const folderArg = args.find(arg => arg.startsWith('tests/'));
+    return folderArg ? folderArg.split('/').pop() || 'default' : 'default';
+}
+
+const folderName = getFolderNameFromArgs();
+
 const config: Config = {
     testTimeout: 10000,
     extensionsToTreatAsEsm: ['.ts'],
@@ -25,7 +34,17 @@ const config: Config = {
 
     // An array of glob patterns indicating a set of files for which coverage information should be collected
     // collectCoverageFrom: undefined,
-    coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
+    coverageReporters: [
+        'html',
+        'text',
+        'text-summary',
+        [
+            'cobertura',
+            {
+                file: `cobertura-${folderName}.xml`,
+            },
+        ],
+    ],
 
     // The directory where Jest should output its coverage files
     coverageDirectory: 'coverage',
