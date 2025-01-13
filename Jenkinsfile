@@ -210,7 +210,7 @@ pipeline {
             post {
                 always {
                     junit 'test-results/junit.xml'
-                    sh 'yarn coverage:merge coverage/cobertura-merged.xml coverage/cobertura-unit.xml coverage/cobertura-integration.xml'
+                    sh 'yarn coverage:merge coverage/cobertura-merged.xml unit=coverage/cobertura-unit.xml integration=coverage/cobertura-integration.xml'
                     cobertura coberturaReportFile: 'coverage/cobertura-merged.xml'
                     sh 'yarn db:down -v || true'
                 }
