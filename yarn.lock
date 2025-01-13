@@ -2476,6 +2476,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bindings@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10/593d5ae975ffba15fbbb4788fe5abd1e125afbab849ab967ab43691d27d6483751805d98cb92f7ac24a2439a8a8678cd0131c535d5d63de84e383b0ce2786133
+  languageName: node
+  linkType: hard
+
 "bl@npm:^4.0.3, bl@npm:^4.1.0":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
@@ -2828,6 +2837,19 @@ __metadata:
   version: 4.6.0
   resolution: "co@npm:4.6.0"
   checksum: 10/a5d9f37091c70398a269e625cedff5622f200ed0aa0cff22ee7b55ed74a123834b58711776eb0f1dc58eb6ebbc1185aa7567b57bd5979a948c6e4f85073e2c05
+  languageName: node
+  linkType: hard
+
+"cobertura-merge@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "cobertura-merge@npm:1.0.4"
+  dependencies:
+    minimist: "npm:^1.2.5"
+    source-map-support: "npm:^0.5.19"
+    xml2json: "npm:^0.12.0"
+  bin:
+    cobertura-merge: build/src/index.js
+  checksum: 10/47a62e84b8e439a165922c4eb10c2fa61a3ef361eb32c393ad09595b88e178a17590d55d4be006daf2195ce5b09c32991f6d8b866ca1c3d2f12c8d68fdcb97b9
   languageName: node
   linkType: hard
 
@@ -3852,6 +3874,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10/b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
+  languageName: node
+  linkType: hard
+
 "filelist@npm:^1.0.4":
   version: 1.0.4
   resolution: "filelist@npm:1.0.4"
@@ -4283,6 +4312,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hoek@npm:5.x.x":
+  version: 5.0.4
+  resolution: "hoek@npm:5.0.4"
+  checksum: 10/23976f0fd746fb8712e780ed154cabedbe7c4c7f58da072b6e8ddad9a0658ec82b5ad9ea3cac9b57b0c6e1c61c8522b6c7ebc0dc61a8bc199db073313271d2c8
+  languageName: node
+  linkType: hard
+
+"hoek@npm:6.x.x":
+  version: 6.1.3
+  resolution: "hoek@npm:6.1.3"
+  checksum: 10/eb038b7fc48135822763b76163b4de0baa77827df508e12bdd9ae5bfcae388926a22b552dc7be234ed3cca0f71a1f61c98c5f14cb4f3900c260905074af1c5cf
+  languageName: node
+  linkType: hard
+
+"hoek@npm:^4.2.1":
+  version: 4.3.1
+  resolution: "hoek@npm:4.3.1"
+  checksum: 10/c198e994a31a55b6c89fd4c7ef61c2730982215469bf08ce43dc906329d5e1920e7e31ead1700a9b915237f60bb8e0391cc1bcdbc3bff7de0c9210ccb399d358
+  languageName: node
+  linkType: hard
+
 "html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
@@ -4582,6 +4632,15 @@ __metadata:
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
   checksum: 10/f032df8e02dce8ec565cf2eb605ea939bdccea528dbcf565cdf92bfa2da9110461159d86a537388ef1acef8815a330642d7885b29010e8f7eac967c9993b65ab
+  languageName: node
+  linkType: hard
+
+"isemail@npm:3.x.x":
+  version: 3.2.0
+  resolution: "isemail@npm:3.2.0"
+  dependencies:
+    punycode: "npm:2.x.x"
+  checksum: 10/1a94cc2bb47f0dbc316faaab06610abbe55da5d01f0e154ef414ba331e101e848de34a30d7a5da3ab645b922281fc098c81a8be6d928b85a8f3d1289c952e8bc
   languageName: node
   linkType: hard
 
@@ -5146,6 +5205,17 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 10/97023d78446098c586faaa467fbf2c6b07ff06e2c85a19e3926adb5b0effe9ac60c4913ae03e2719f9c01ae8ffd8d92f6b262cedb9555ceeb5d19263d8c6362a
+  languageName: node
+  linkType: hard
+
+"joi@npm:^13.1.2":
+  version: 13.7.0
+  resolution: "joi@npm:13.7.0"
+  dependencies:
+    hoek: "npm:5.x.x"
+    isemail: "npm:3.x.x"
+    topo: "npm:3.x.x"
+  checksum: 10/684fa14593e235b28e9cebda06cf516cb096fb6e130d0662689603c6efe71736d7a3dbeb5b13e55ad88e958f8f65982ee570ed3b42f485ac3a405facbfa70613
   languageName: node
   linkType: hard
 
@@ -5763,6 +5833,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-expat@npm:^2.3.18":
+  version: 2.4.1
+  resolution: "node-expat@npm:2.4.1"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    nan: "npm:^2.19.0"
+    node-gyp: "npm:latest"
+  checksum: 10/7f1a3ece5093b775c9c1f1d8cabe26ee12fe1a1bb71b3d7a1efed0d0b9b24df82c6765451fb4096032546f296373472fa5490aad9cd821da8a6a9efd1fd20151
+  languageName: node
+  linkType: hard
+
 "node-fetch@npm:^2.6.1":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
@@ -6316,7 +6397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0":
+"punycode@npm:2.x.x, punycode@npm:^2.1.0":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10/febdc4362bead22f9e2608ff0171713230b57aff9dddc1c273aa2a651fbd366f94b7d6a71d78342a7c0819906750351ca7f2edd26ea41b626d87d6a13d1bd059
@@ -6801,6 +6882,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map-support@npm:^0.5.19":
+  version: 0.5.21
+  resolution: "source-map-support@npm:0.5.21"
+  dependencies:
+    buffer-from: "npm:^1.0.0"
+    source-map: "npm:^0.6.0"
+  checksum: 10/8317e12d84019b31e34b86d483dd41d6f832f389f7417faf8fc5c75a66a12d9686e47f589a0554a868b8482f037e23df9d040d29387eb16fa14cb85f091ba207
+  languageName: node
+  linkType: hard
+
 "source-map@npm:^0.6.0, source-map@npm:^0.6.1, source-map@npm:~0.6.1":
   version: 0.6.1
   resolution: "source-map@npm:0.6.1"
@@ -6835,6 +6926,7 @@ __metadata:
     "@types/swagger-ui-express": "npm:^4.1.6"
     "@types/yargs": "npm:^17.0.32"
     "@typescript-eslint/parser": "npm:^8.17.0"
+    cobertura-merge: "npm:^1.0.4"
     cors: "npm:^2.8.5"
     cpy-cli: "npm:^5.0.0"
     dotenv: "npm:^16.4.7"
@@ -7277,6 +7369,15 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 10/952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
+"topo@npm:3.x.x":
+  version: 3.0.3
+  resolution: "topo@npm:3.0.3"
+  dependencies:
+    hoek: "npm:6.x.x"
+  checksum: 10/98caec35d0fe9b9d1ef740c5fd26082fdefa06b567b2e314fe1a93282c5570abfe9ca0692bdfd38d3930be509e891e732dbbbae12d8724db037e7887acd41cd2
   languageName: node
   linkType: hard
 
@@ -7788,6 +7889,19 @@ __metadata:
     imurmurhash: "npm:^0.1.4"
     signal-exit: "npm:^3.0.7"
   checksum: 10/3be1f5508a46c190619d5386b1ac8f3af3dbe951ed0f7b0b4a0961eed6fc626bd84b50cf4be768dabc0a05b672f5d0c5ee7f42daa557b14415d18c3a13c7d246
+  languageName: node
+  linkType: hard
+
+"xml2json@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "xml2json@npm:0.12.0"
+  dependencies:
+    hoek: "npm:^4.2.1"
+    joi: "npm:^13.1.2"
+    node-expat: "npm:^2.3.18"
+  bin:
+    xml2json: bin/xml2json
+  checksum: 10/7d2137cbcc8c737ba3f9479812f5ce741206dfae8832f4f283a41bdada6d217497bef0f9d7c45dbef9b6dfa5982c3a5dc5fab772db2bd54e2db2ce7b1d9b15ee
   languageName: node
   linkType: hard
 
