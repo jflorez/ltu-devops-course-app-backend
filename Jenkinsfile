@@ -216,7 +216,7 @@ pipeline {
                 always {
                     // Publish test results and clean up the database
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-*.xml'
                     sh 'yarn db:down -v || true'
                 }
             }
