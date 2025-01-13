@@ -13,7 +13,8 @@
     "start-dev": "nodemon --ext ts,js,mjs,cjs,json --ignore './build/' --exec 'yarn tsoa && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts'",
     "start": "yarn tsoa && node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts",
     "db:up": "docker compose up speedrun-db --build -d --wait",
-    "db:down": "docker compose down speedrun-db"
+    "db:down": "docker compose down speedrun-db",
+    "coverage:merge": "cobertura-merge -o"
   },
   "author": "",
   "license": "ISC",
@@ -63,7 +64,8 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.17.0"
+    "typescript-eslint": "^8.17.0",
+    "cobertura-merge": "^3.0.0"
   },
   "packageManager": "yarn@4.5.3"
 }

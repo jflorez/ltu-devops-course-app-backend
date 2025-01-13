@@ -182,9 +182,7 @@ pipeline {
             post {
                 always {
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-unit.xml'
                     sh 'rm -rf test-results'
-                    sh 'rm -rf coverage'
                 }
             }
         }
@@ -212,7 +210,8 @@ pipeline {
             post {
                 always {
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-integration.xml'
+                    sh 'yarn coverage:merge coverage/cobertura-merged.xml coverage/cobertura-unit.xml coverage/cobertura-integration.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-merged.xml'
                     sh 'yarn db:down -v || true'
                 }
             }
