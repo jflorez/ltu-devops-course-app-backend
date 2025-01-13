@@ -84,6 +84,9 @@ pipeline {
     }
 
     environment {
+        // Sanitize BRANCH_NAME to only include valid characters
+        sanitizedBranchName = env.BRANCH_NAME.replaceAll(/[^a-zA-Z0-9_.-]/, '')
+
         // Dynamic Port Assignment:
         // - For main branch: Uses fixed production ports (3001 for API, 3306 for DB)
         // - For develop branch: Uses fixed test ports (3002 for API, 3307 for DB)
@@ -190,7 +193,7 @@ pipeline {
 
         stage('Deploy Review Environment') {
             environment {
-                ENVIRONMENT_ID = "review-${BRANCH_NAME}-${BUILD_NUMBER}"
+                ENVIRONMENT_ID = "review-${sanitizedBranchName}-${BUILD_NUMBER}"
             }
             steps {
                 // Deploy the review environment for testing and feedback
@@ -202,7 +205,7 @@ pipeline {
         // Stage 5: Integration Testing
         stage('Integration Tests') {
             environment {
-                ENVIRONMENT_ID = "review-${BRANCH_NAME}-${BUILD_NUMBER}"
+                ENVIRONMENT_ID = "review-${sanitizedBranchName}-${BUILD_NUMBER}"
                 MARIADB_HOST = "host.docker.internal"
             }
             steps {
