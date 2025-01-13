@@ -181,7 +181,9 @@ pipeline {
                 always {
                     // Publish test results and clean up test artifacts
                     junit 'test-results/junit.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
                     sh 'rm -rf test-results'
+                    sh 'rm -rf coverage'
                 }
             }
         }
@@ -211,6 +213,7 @@ pipeline {
                 always {
                     // Publish test results and clean up the database
                     junit 'test-results/junit.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
                     sh 'yarn db:down -v || true'
                 }
             }
