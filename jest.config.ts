@@ -5,14 +5,7 @@
 
 import type { Config } from 'jest';
 
-// Function to extract folder name from command-line arguments
-function getFolderNameFromArgs(): string {
-    const args = process.argv.slice(2);
-    const folderArg = args.find(arg => arg.startsWith('tests/'));
-    return folderArg ? folderArg.split('/').pop() || 'default' : 'default';
-}
-
-const folderName = getFolderNameFromArgs();
+const reportType = process.env.JEST_REPORT || 'default';
 
 const config: Config = {
     testTimeout: 10000,
@@ -41,7 +34,7 @@ const config: Config = {
         [
             'cobertura',
             {
-                file: `cobertura-${folderName}.xml`,
+                file: `cobertura-${reportType}.xml`,
             },
         ],
     ],

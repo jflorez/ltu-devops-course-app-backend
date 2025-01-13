@@ -177,14 +177,12 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                // Run unit tests to verify individual components of the application
-                sh 'yarn test tests/unit'
+                sh 'JEST_REPORT=unit yarn test tests/unit'
             }
             post {
                 always {
-                    // Publish test results and clean up test artifacts
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-*.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-unit.xml'
                     sh 'rm -rf test-results'
                     sh 'rm -rf coverage'
                 }
@@ -209,14 +207,12 @@ pipeline {
                 MARIADB_HOST = "host.docker.internal"
             }
             steps {
-                // Run integration tests to verify interactions between components
-                sh 'yarn test tests/api tests/db'
+                sh 'JEST_REPORT=integration yarn test tests/api tests/db'
             }
             post {
                 always {
-                    // Publish test results and clean up the database
                     junit 'test-results/junit.xml'
-                    cobertura coberturaReportFile: 'coverage/cobertura-*.xml'
+                    cobertura coberturaReportFile: 'coverage/cobertura-integration.xml'
                     sh 'yarn db:down -v || true'
                 }
             }
