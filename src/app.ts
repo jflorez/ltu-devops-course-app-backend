@@ -13,7 +13,7 @@ app.use(
     cors({
         origin: true,
         methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'X-API-KEY'],
+        allowedHeaders: ['Content-Type', 'X-API-KEY', 'Cache-Control', 'Pragma', 'Expires', 'Origin', 'Accept', 'Authorization'],
         preflightContinue: false,
         optionsSuccessStatus: 204,
     }),
