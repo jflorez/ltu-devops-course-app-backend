@@ -316,3 +316,35 @@ This project serves as an educational example of DevOps practices. In real-world
     - Budget alerts
     - Usage tracking
     - Cost allocation tags
+
+## 12-Factor Principles in the Speedrun App
+
+The Speedrun App demonstrates several key principles from the 12-factor methodology, making it a practical example for learning modern application development practices:
+
+1. **Codebase**: One codebase tracked in Git, supporting deployment to multiple environments (dev, test, prod).
+
+2. **Dependencies**: All dependencies are explicitly declared in `package.json` and installed via yarn, ensuring consistent builds.
+
+3. **Config**: All configuration is stored in environment variables (see `.env` and `docker-compose.yml`), with no hardcoded values in the codebase.
+
+4. **Backing Services**: The MariaDB database is treated as an attached resource, accessed via environment variables, making it easily swappable.
+
+5. **Build, Release, Run**: Clear separation between build (yarn install, tsoa), release (Docker image), and run (container execution) stages.
+
+6. **Processes**: The application runs as stateless processes, with data persistence handled by the MariaDB database.
+
+7. **Port Binding**: The app exports HTTP as a service via port binding, configured through environment variables.
+
+8. **Concurrency**: The application can scale horizontally through process execution, with each instance being self-contained.
+
+9. **Disposability**: Fast startup and graceful shutdown implemented through Docker and proper signal handling (SIGTERM/SIGINT).
+
+10. **Dev/Prod Parity**: Docker ensures consistent environments across development, testing, and production.
+
+Areas for Student Exploration:
+
+11. **Logs**: Currently implements basic console logging. Students can enhance this by implementing structured logging and log aggregation.
+
+12. **Admin Processes**: While the application includes database operations, it could be enhanced with dedicated admin tools for one-off tasks.
+
+These principles demonstrate modern application architecture while providing opportunities for further learning and improvement.
