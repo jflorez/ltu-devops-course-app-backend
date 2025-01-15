@@ -60,6 +60,41 @@ To get started with the Speedrun App, follow these steps:
     yarn start-dev
     ```
 
+### Docker Development
+
+To run the application using Docker:
+
+1. **Build and start all services**:
+    ```bash
+    docker compose up --build
+    ```
+
+2. **Start services in detached mode** (runs in background):
+    ```bash
+    docker compose up -d
+    ```
+
+3. **View logs**:
+    ```bash
+    docker compose logs -f
+    ```
+
+4. **Stop all services**:
+    ```bash
+    docker compose down
+    ```
+
+5. **Rebuild a specific service**:
+    ```bash
+    docker compose up --build <service-name>
+    ```
+
+Common Docker commands for development:
+- List running containers: `docker ps`
+- View container logs: `docker logs -f <container-id>`
+- Access container shell: `docker exec -it <container-id> sh`
+- Remove all containers and volumes: `docker compose down -v`
+
 ## Usage
 
 The application provides a RESTful API to manage speedruns. You can interact with the API using tools like `curl`, `Bruno`, or any HTTP client library.
